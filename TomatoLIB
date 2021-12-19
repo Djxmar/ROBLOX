@@ -330,7 +330,7 @@ function ui:SetColor(c3)
 	self.UI.BackgroundColor3=c3
 	self.MainColor=c3
 	for _,v in next, self.UI:GetDescendants()do
-		if(v:IsA'GuiObject' and v.BackgroundTransparency==0)then
+		if(v:IsA'GuiObject' and v.BackgroundTransparency==0.7)then
 			v.BackgroundColor3=c3
 		end
 	end
