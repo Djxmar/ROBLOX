@@ -356,7 +356,7 @@ end
 function ui:AddTab(name)
 	local tabB = uiDesign.Button:Clone()
 	tabB.BackgroundColor3=self.MainColor
-    tabB.BackgroundTransparency=0.7
+    tabB.BackgroundTransparency=0
 	tabB.Name='Tab'
 	tabB.Text.Text=name
 	local list = self:NewList()
