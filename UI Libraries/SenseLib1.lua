@@ -232,8 +232,7 @@ function SolarisLib:New(Config)
         for i,v in pairs(SolarisLib.Settings) do
             content[i] = v
         end
-        writefile(
-			.FolderToSave .. "/settings.txt", tostring(http:JSONEncode(content)))
+        writefile(Config.FolderToSave .. "/settings.txt", tostring(http:JSONEncode(content)))
     end    
     SolarisLib.Settings = http:JSONDecode(readfile(Config.FolderToSave .. "/settings.txt"))
 
@@ -715,16 +714,8 @@ function SolarisLib:New(Config)
             MFrame.TopBar.ButtonHolder.MenuBtn.MenuFrame.Frame.BackgroundColor3 = SolarisLib.Themes[SolarisLib.Settings.Theme].TopBar
         end
     end)
-    
-    function SolarisLib:SaveCfg(name)
-        local content = {}
-        for i,v in pairs(SolarisLib.Flags) do
-            content[i] = v.Value
-        end
-        writefile(Config.FolderToSave .. "/configs/" .. name .. ".txt", tostring(http:JSONEncode(content)))
-    end
-	
-	function SolarisLib:LoadCfg(cfg)
+
+    function SolarisLib:LoadCfg(cfg)
         local content = http:JSONDecode(cfg)
         table.foreach(content, function(a,b)
             if SolarisLib.Flags[a] then
@@ -735,6 +726,15 @@ function SolarisLib:New(Config)
         end)
     end
     
+    function SolarisLib:SaveCfg(name)
+        local content = {}
+        for i,v in pairs(SolarisLib.Flags) do
+            content[i] = v.Value
+        end
+        writefile(Config.FolderToSave .. "/configs/" .. name .. ".txt", tostring(http:JSONEncode(content)))
+    end
+    
+
     local TabHolder = {}
     function TabHolder:Tab(text)
         local Tab = TabPreset:Clone()
