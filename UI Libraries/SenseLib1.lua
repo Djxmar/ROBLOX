@@ -1,6 +1,6 @@
 -- This User Interface Library is brought to you by Solaris Software.
 local Solaris = Instance.new("ScreenGui")
-Solaris.Name = tostring(math.random())
+Solaris.Name = "SenseGUI"
 Solaris.Parent = game.CoreGui
 Solaris.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
