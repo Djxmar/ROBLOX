@@ -1,0 +1,430 @@
+local Plr = game.Players.LocalPlayer
+local Mouse = Plr:GetMouse()
+local Debris = game:GetService("Debris")
+
+local SolarisLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Djxmar/ROBLOX/main/UI%20Libraries/SenseLib1.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Djxmar/ROBLOX/main/Flyscript", true))()
+
+local function NotifySound()
+    local Sound = Instance.new("Sound", game.Players.LocalPlayer.PlayerGui)
+    Sound.SoundId = "rbxassetid://225320558"
+    Sound:Play()
+    Debris:AddItem(Sound,2)
+end
+
+--[[SolarisLib:New({
+   Name - Title of the UI <string>
+   FolderToSave - Name of the folder where the UI files will be stored <string>
+})]]
+local win = SolarisLib:New({
+   Name = "Sense",
+   FolderToSave = "Sense"
+})
+
+--win:Tab(title <string>)
+local hometab = win:Tab("Home")
+local playertab = win:Tab("Player")
+local visualtab = win:Tab("Visual")
+local scriptingtools = win:Tab("Scripting Tools")
+local configtab = win:Tab("Config")
+
+local sec = hometab:Section("Most used features")
+local sec2 = hometab:Section("Credits")
+local sec3 = configtab:Section("Settings")
+local sec4 = visualtab:Section("World Spawns")
+local sec5 = scriptingtools:Section("Child Checker")
+local sec6 = scriptingtools:Section("Children Checker")
+
+
+_G.CombatHax = false
+local toggle = sec:Toggle("Combat Hax", false,"Combat Hax", function(t)
+   _G.CombatHax = t
+   
+   game.Players.LocalPlayer.Character.DescendantAdded:connect(function(v)
+    wait()
+    if _G.CombatHax and v.Name == 'NoSclera'  or v.Name == 'BodyGyro' or v.Name == 'ClientRemove' then
+        v.Parent = game.Lighting
+    end
+end)
+
+game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+    wait()
+    if _G.CombatHax and game.Players.LocalPlayer.Character.Humanoid.WalkSpeed <= 16 then
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 20
+    end
+end)
+
+game.Players.LocalPlayer.Character.Humanoid:GetPropertyChangedSignal("JumpPower"):Connect(function()
+    wait()
+    if _G.CombatHax and game.Players.LocalPlayer.Character.Humanoid.JumpPower <= 0 then
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = 35.700
+    end
+end)
+
+game.Players.LocalPlayer.Character.HumanoidRootPart:GetPropertyChangedSignal("Anchored"):Connect(function()
+    wait()
+    if _G.CombatHax and game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored == true then
+        game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
+    end
+end)
+   
+end)
+
+--
+
+_G.ArtifactNotifier = false
+local toggle = sec:Toggle("Artifact Notifier", false,"ArtifactNotifier", function(t)
+    _G.ArtifactNotifier = t
+
+    game.Workspace.ChildAdded:Connect(function(v)
+        wait()
+        if _G.ArtifactNotifier and v.Name == "PieceofForge" then
+            SolarisLib:Notification("Artifact Notifier", "Artifact spawned somewhere look around the map!!!")
+            NotifySound()
+        end
+    end)
+
+    local children = workspace:GetDescendants()
+for i, child in ipairs(children) do
+	    if _G.ArtifactNotifier and child.Name == "PieceofForge" then
+            SolarisLib:Notification("Artifact Notifier", "Artifact spawned somewhere look around the map!!!")
+            NotifySound()
+    	    end
+end
+    
+    if _G.ArtifactNotifier then
+        local children = workspace:GetDescendants()
+for i, child in ipairs(children) do
+	if child.Name == "Yessir" and child.Parent.Name == "PieceofForge" then
+        NotifySound()
+        			print(child)
+        			local BillboardGui = Instance.new("BillboardGui", game.CoreGui)
+			local TextLabel = Instance.new("TextLabel")
+			BillboardGui.Adornee = child
+			BillboardGui.Name = "ARTIFACT"
+			BillboardGui.Size = UDim2.new(0, 100, 0, 150)
+			BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
+			BillboardGui.AlwaysOnTop = true
+			TextLabel.Parent = BillboardGui
+			TextLabel.BackgroundTransparency = 1
+			TextLabel.Position = UDim2.new(0, 0, 0, -50)
+			TextLabel.Size = UDim2.new(0, 100, 0, 100)
+			TextLabel.Font = Enum.Font.SourceSansSemibold
+			TextLabel.TextSize = 20
+			TextLabel.TextColor3 = Color3.fromRGB(255,0,0)
+			TextLabel.TextStrokeTransparency = 0
+			TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+			TextLabel.Text = "ARTIFACT"
+	 end
+end
+    end
+
+    workspace.DescendantAdded:Connect(function(v)
+        wait()
+
+        if _G.ArtifactNotifier and v.Name == "Yessir" and v.Parent.Name == "PieceofForge" then
+            NotifySound()
+            local BillboardGui = Instance.new("BillboardGui", game.CoreGui)
+			local TextLabel = Instance.new("TextLabel")
+			BillboardGui.Adornee = v
+			BillboardGui.Name = "ARTIFACT"
+			BillboardGui.Size = UDim2.new(0, 100, 0, 150)
+			BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
+			BillboardGui.AlwaysOnTop = true
+			TextLabel.Parent = BillboardGui
+			TextLabel.BackgroundTransparency = 1
+			TextLabel.Position = UDim2.new(0, 0, 0, -50)
+			TextLabel.Size = UDim2.new(0, 100, 0, 100)
+			TextLabel.Font = Enum.Font.SourceSansSemibold
+			TextLabel.TextSize = 20
+			TextLabel.TextColor3 = Color3.fromRGB(255,0,0)
+			TextLabel.TextStrokeTransparency = 0
+			TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+			TextLabel.Text = "ARTIFACT"
+
+         end
+    end)
+
+    if _G.ArtifactNotifier == false then
+        for i,v in pairs(game.CoreGui:GetChildren()) do
+            if v.Name == "ARTIFACT" then
+                v.Parent = nil
+            end
+        end
+    end
+
+end)
+
+--
+
+sec:Button("Nofall", function()
+    game.ReplicatedStorage.Requests.FallDamage.Parent = game.Lighting
+    game.Lighting.FallDamage.Parent = nil
+ end)
+
+_G.Fullbright = false
+local toggle = sec:Toggle("Fullbright", false,"Fullbright", function(t)
+    _G.Fullbright = t
+    local lighting = game:GetService("Lighting")
+
+if _G.Fullbright then
+    wait()
+lighting.AreaBrightness.Value = 4
+lighting.Brightness = 0.5
+lighting.Bloom.Parent = game.ReplicatedStorage
+lighting.GlobalShadows = false
+lighting.Atmosphere.Parent = game.ReplicatedStorage
+lighting.IntenseDepth.Parent = game.ReplicatedStorage
+lighting.DepthOfField.Parent = game.ReplicatedStorage
+elseif _G.Fullbright == false then
+wait()
+if game.ReplicatedStorage:FindFirstChild("Bloom") then
+game.ReplicatedStorage.Bloom.Parent = game.Lighting
+end
+if game.ReplicatedStorage:FindFirstChild("Atmosphere") then
+game.ReplicatedStorage.Atmosphere.Parent = game.Lighting
+end
+if game.ReplicatedStorage:FindFirstChild("IntenseDepth") then
+game.ReplicatedStorage.IntenseDepth.Parent = game.Lighting
+end
+if game.ReplicatedStorage:FindFirstChild("DepthOfField") then
+game.ReplicatedStorage.DepthOfField.Parent = game.Lighting
+end
+lighting.GlobalShadows = true
+lighting.Brightness = 3
+end
+
+
+
+while _G.Fullbright do
+wait()
+game.Lighting.FogEnd = 1000000
+end
+end)
+
+_G.LootDropPickup = false
+local toggle = sec:Toggle("Loot Drop Pickup", false,"LootDropPickUp", function(t)
+   _G.LootDropPickup = t
+   
+   game.Workspace.Thrown.DescendantAdded:connect(function(v)
+    wait()
+    if _G.LootDropPickup and v.Name == 'LootDrop' and v:IsA('Part') or v:IsA('MeshPart') or v:IsA('UnionOperation') then 
+        warn(v)
+        local distance = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Position).Magnitude
+        print(v,distance)
+
+        if _G.LootDropPickup and distance <= 60 then
+            v.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+            wait()
+        end    
+
+    end
+end)
+   
+end)
+
+sec:Bind("Click Delete", Enum.KeyCode.F2, false, "ClickDelete", function()
+    if not Mouse.Target then return end
+    Mouse.Target.Parent = nil
+ end)
+
+ _G.TpLimit = 0
+ sec:Bind("Click Teleport", Enum.KeyCode.F3, false, "ClickTeleport", function()
+    local distance = (Mouse.Hit.p - Plr.Character.HumanoidRootPart.Position).Magnitude
+    if distance < _G.TpLimit then
+    if not Mouse.Hit.p then return end
+    Plr.Character:MoveTo(Mouse.Hit.p)
+    end
+ end)
+ local ClickTpSlider = sec:Slider("Teleport Distance",35,60,0,2.5,"TpDistance", function(t)
+    _G.TpLimit = t
+ end)
+ 
+ sec:Button("Input Bypass", function()
+    game.Players.LocalPlayer.Character.Parent = game.Lighting
+    game.Players.LocalPlayer.Character.CharacterHandler.InputClient.Parent = nil
+    game.Players.LocalPlayer.Character.Parent = game.Workspace.Live
+ end)
+
+
+sec3:Button("Save", function()
+SolarisLib:SaveCfg(game.PlaceId)
+end)
+
+sec3:Button("Load", function()
+   SolarisLib:LoadCfg(game.PlaceId)
+end)
+
+
+local label = sec2:Label("Scripter: Takeda#1332")
+local label = sec2:Label("UI Library: Solaris")
+
+_G.ChestEsp = false
+local toggle = sec4:Toggle("Chest ESP", false,"ChestESP", function(t)
+    _G.ChestEsp = t
+
+    if _G.ChestEsp then
+        local children = workspace.Thrown:GetChildren()
+for i, child in ipairs(children) do
+	if child.Name == "Chest" and child:FindFirstChild("RootPart") then
+        			print(child)
+        			local BillboardGui = Instance.new("BillboardGui", game.CoreGui)
+			local TextLabel = Instance.new("TextLabel")
+			BillboardGui.Adornee = child
+			BillboardGui.Name = "Chest"
+			BillboardGui.Size = UDim2.new(0, 100, 0, 150)
+			BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
+			BillboardGui.AlwaysOnTop = true
+			TextLabel.Parent = BillboardGui
+			TextLabel.BackgroundTransparency = 1
+			TextLabel.Position = UDim2.new(0, 0, 0, -50)
+			TextLabel.Size = UDim2.new(0, 100, 0, 100)
+			TextLabel.Font = Enum.Font.SourceSansSemibold
+			TextLabel.TextSize = 20
+			TextLabel.TextColor3 = Color3.new(1, 1, 1)
+			TextLabel.TextStrokeTransparency = 0
+			TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+			TextLabel.Text = "Chest"
+	 end
+end
+    end
+
+    workspace.Thrown.DescendantAdded:Connect(function(v)
+        wait()
+
+        if _G.ChestEsp and v.Name == "RootPart" and v.Parent.Name == "Chest" then
+            warn("Chest ESP")
+
+            local BillboardGui = Instance.new("BillboardGui", game.CoreGui)
+			local TextLabel = Instance.new("TextLabel")
+			BillboardGui.Adornee = v
+			BillboardGui.Name = "Chest"
+			BillboardGui.Size = UDim2.new(0, 100, 0, 150)
+			BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
+			BillboardGui.AlwaysOnTop = true
+			TextLabel.Parent = BillboardGui
+			TextLabel.BackgroundTransparency = 1
+			TextLabel.Position = UDim2.new(0, 0, 0, -50)
+			TextLabel.Size = UDim2.new(0, 100, 0, 100)
+			TextLabel.Font = Enum.Font.SourceSansSemibold
+			TextLabel.TextSize = 20
+			TextLabel.TextColor3 = Color3.new(1, 1, 1)
+			TextLabel.TextStrokeTransparency = 0
+			TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+			TextLabel.Text = "Chest"
+
+         end
+    end)
+
+    if _G.ChestEsp == false then
+        for i,v in pairs(game.CoreGui:GetChildren()) do
+            if v.Name == "Chest" then
+                v.Parent = nil
+            end
+        end
+    end
+
+end)
+
+--
+
+_G.BagEsp = false
+local toggle = sec4:Toggle("Bag ESP", false,"BagEsp", function(t)
+    _G.BagEsp = t
+
+        local children = workspace.Thrown:GetChildren()
+for i, child in ipairs(children) do
+	if _G.BagEsp and child.Name == "BagDrop" and child:IsA("MeshPart") then
+        			print(child)
+        			local BillboardGui = Instance.new("BillboardGui", game.CoreGui)
+			local TextLabel = Instance.new("TextLabel")
+			BillboardGui.Adornee = child
+			BillboardGui.Name = "Bag"
+			BillboardGui.Size = UDim2.new(0, 100, 0, 150)
+			BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
+			BillboardGui.AlwaysOnTop = true
+			TextLabel.Parent = BillboardGui
+			TextLabel.BackgroundTransparency = 1
+			TextLabel.Position = UDim2.new(0, 0, 0, -50)
+			TextLabel.Size = UDim2.new(0, 100, 0, 100)
+			TextLabel.Font = Enum.Font.SourceSansSemibold
+			TextLabel.TextSize = 20
+			TextLabel.TextColor3 = Color3.new(1, 1, 1)
+			TextLabel.TextStrokeTransparency = 0
+			TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+			TextLabel.Text = "Bag"
+	 end
+end
+
+    workspace.Thrown.ChildAdded:Connect(function(v)
+        wait()
+
+        if _G.BagEsp and v.Name == "BagDrop" and v:IsA("MeshPart") then
+            warn("Bag ESP")
+
+            local BillboardGui = Instance.new("BillboardGui", game.CoreGui)
+			local TextLabel = Instance.new("TextLabel")
+			BillboardGui.Adornee = v
+			BillboardGui.Name = "Bag"
+			BillboardGui.Size = UDim2.new(0, 100, 0, 150)
+			BillboardGui.StudsOffset = Vector3.new(0, 1, 0)
+			BillboardGui.AlwaysOnTop = true
+			TextLabel.Parent = BillboardGui
+			TextLabel.BackgroundTransparency = 1
+			TextLabel.Position = UDim2.new(0, 0, 0, -50)
+			TextLabel.Size = UDim2.new(0, 100, 0, 100)
+			TextLabel.Font = Enum.Font.SourceSansSemibold
+			TextLabel.TextSize = 20
+			TextLabel.TextColor3 = Color3.new(1, 1, 1)
+			TextLabel.TextStrokeTransparency = 0
+			TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+			TextLabel.Text = "Bag"
+
+         end
+    end)
+
+    if _G.BagEsp == false then
+        for i,v in pairs(game.CoreGui:GetChildren()) do
+            if v.Name == "Bag" then
+                v.Parent = nil
+            end
+        end
+    end
+
+end)
+
+--
+
+local SenseFolder = Instance.new("Folder", game.CoreGui)
+SenseFolder.Name = ""
+
+_G.ChildPrinter = false
+local toggle = sec5:Toggle("Child Printer", false,"ChildPrinter", function(t)
+    _G.ChildPrinter = t
+end)
+
+sec5:Bind("Child Printer", Enum.KeyCode.LeftBracket, false, "ChildPrinter", function()
+    if not _G.ChildPrinter then return end
+    if not Mouse.Target then return end
+    v = Mouse.Target
+    warn(v.Name.. " (".. v.ClassName .. ") " .. v.Parent.Name.. " > "..v.Parent.Parent.Name.. " | ".. v:GetFullName())
+ end)
+
+_G.ChildrenPrinter = false
+local toggle = sec6:Toggle("Children Printer", false,"ChildrenPrinter", function(t)
+    _G.ChildrenPrinter = t
+end)
+
+sec6:Bind("Children Printer", Enum.KeyCode.RightBracket, false, "ChildrenPrinter", function()
+    if not _G.ChildrenPrinter then return end
+    if not Mouse.Target then return end
+    v = Mouse.Target
+    for i,n in pairs(v:GetChildren()) do
+        warn(n.Name.. " (".. n.ClassName .. ") " .. n.Parent.Name.. " > "..n.Parent.Parent.Name.. " | ".. n:GetFullName()) 
+    end
+ end)
+
+if game:GetService("CoreGui"):WaitForChild("Sense") then
+wait(1)
+game:GetService("CoreGui")["Sense"].MainFrameHolder.MainFrame.TopBar.ButtonHolder.SearchBtn:Destroy()
+end
