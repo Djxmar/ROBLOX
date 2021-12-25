@@ -395,6 +395,96 @@ end)
 
 --
 
+_G.HealthBars = false
+local toggle = sec4:Toggle("Health Bars", false,"HealthBars", function(t)
+    _G.HealthBars = t
+
+    shared.auto_update_npcs = true
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local HPBarTemplate = game:GetObjects("rbxassetid://8353151041")[1]
+if HPBarTemplate then HPBarTemplate = HPBarTemplate:Clone() else return end
+
+local function onCharacterAdded(Character, Player, Format)
+    local Head = Character:WaitForChild("Head")
+    if Head:FindFirstChild("EnemyGui") then return end
+
+    local HPBar = HPBarTemplate:Clone()
+    HPBar.MaxDistance = 800
+    HPBar.Health.TextLabel.Text = Player.Name
+    HPBar.Health.Bar.Size = UDim2.new(Character.Humanoid.Health / Character.Humanoid.MaxHealth, 0, 1, 0)
+    HPBar.Parent = Head
+    
+    local TextLabel = Instance.new("TextLabel")
+    TextLabel.Text = ("%d/%d"):format(Character.Humanoid.Health, Character.Humanoid.MaxHealth)
+    TextLabel.Font = Enum.Font.GothamSemibold
+    TextLabel.BackgroundTransparency = 1
+    TextLabel.TextScaled = true
+    TextLabel.Size = UDim2.new(1, 0, 1, 0)
+    TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    TextLabel.Parent = HPBar.Health
+    
+    Character.Humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+        local Health = Character.Humanoid.Health
+        local MaxHealth = Character.Humanoid.MaxHealth
+        
+        HPBar.Health.Bar:TweenSize(UDim2.new(Health / MaxHealth, 0, 1, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.25, true)
+        TextLabel.Text = ("%d/%d"):format(Character.Humanoid.Health, Character.Humanoid.MaxHealth)
+    end)
+end
+
+workspace.Live.ChildAdded:Connect(function(v)
+    if _G.HealthBars and v.Name ~= game.Players.Locallayer.Name then
+    coroutine.wrap(v)(Character)
+    end
+end)
+
+workspace.Live.ChildAdded:Connect(function(childObject)
+    local humanoidModel = childObject:WaitForChild("Head", math.huge)
+    if humanoidModel and childObject:WaitForChild("Humanoid", 10) then
+		if _G.HealthBars and childObject.Name ~= game.Players.LocalPlayer.Name then
+        coroutine.wrap(onCharacterAdded)(childObject, childObject, true)
+		end
+    end
+end)
+
+for _, Model in ipairs(workspace:GetChildren()) do
+    local Head = Model:FindFirstChild("Head")
+    if Head and Model:FindFirstChild("Humanoid") then
+		if _G.HealthBars and Model.Name ~= game.Players.LocalPlayer.Name then
+        coroutine.wrap(onCharacterAdded)(Model, Model, true)
+		end
+    end
+end
+
+while _G.HealthBars do
+    if _G.HealthBars and shared.auto_update_npcs then
+        for _, Model in ipairs(workspace.Live:GetChildren()) do
+            local Head = Model:FindFirstChild("Head")
+            if Head and Model:FindFirstChild("Humanoid") then
+				if _G.HealthBars and Model.Name ~= game.Players.LocalPlayer.Name then
+                coroutine.wrap(onCharacterAdded)(Model, Model, true)
+            end
+		end
+        end
+    end
+    wait(5)
+end
+
+if _G.HealthBars == false then
+    for i,v in pairs(game.Workspace.Live:GetDescendants()) do
+        if v.Name == "EnemyGui" and v.Parent.Name == "Head" then
+            v.Parent = nil
+        end
+    end
+end
+
+end)
+
+--
+
+
 local SenseFolder = Instance.new("Folder", game.CoreGui)
 SenseFolder.Name = ""
 
