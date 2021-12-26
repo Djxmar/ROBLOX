@@ -205,10 +205,22 @@ end)
 _G.LootDropPickup = false
 local toggle = sec:Toggle("Loot Drop Pickup", false,"LootDropPickUp", function(t)
    _G.LootDropPickup = t
-   
+
+   local children = workspace.Thrown:GetDescendants()
+   for i, child in ipairs(children) do
+    if _G.LootDropPickup and child.Name == 'LootDrop' and child.Parent.Name == "Model" and child:IsA('Part') or child:IsA('MeshPart') or child:IsA('UnionOperation') then 
+        local distance = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - child.Position).Magnitude
+
+        if _G.LootDropPickup and distance <= 60 then
+            child.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+            wait()
+        end    
+    end
+   end
+
    game.Workspace.Thrown.DescendantAdded:connect(function(v)
     wait()
-    if _G.LootDropPickup and v.Name == 'LootDrop' and v:IsA('Part') or v:IsA('MeshPart') or v:IsA('UnionOperation') then 
+    if _G.LootDropPickup and v.Name == 'LootDrop' and v.Parent.Name == "Model" and v:IsA('Part') or v:IsA('MeshPart') or v:IsA('UnionOperation') then 
         warn(v)
         local distance = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Position).Magnitude
         print(v,distance)
@@ -244,6 +256,15 @@ sec:Bind("Click Delete", Enum.KeyCode.F2, false, "ClickDelete", function()
     game.Players.LocalPlayer.Character.Parent = game.Lighting
     game.Players.LocalPlayer.Character.CharacterHandler.InputClient.Parent = nil
     game.Players.LocalPlayer.Character.Parent = game.Workspace.Live
+ end)
+
+ sec:Button("Hide Leaderboard Name", function()
+    if game.Players.LocalPlayer.Character then
+    game.Players.LocalPlayer.Character:BreakJoints()
+    end
+    if game.Players.LocalPlayer.leaderstats then
+    game.Players.LocalPlayer.leaderstats.Parent = nil
+    end
  end)
 
 
@@ -416,6 +437,15 @@ local function onCharacterAdded(Character, Player, Format)
     HPBar.Health.Bar.Size = UDim2.new(Character.Humanoid.Health / Character.Humanoid.MaxHealth, 0, 1, 0)
     HPBar.Parent = Head
     
+    if Format then
+        local Name = Character.Name:gsub("(%l)(%u)","%1 %2")
+        if Character.Humanoid.MaxHealth > 1700 then
+            HPBar.Health.TextLabel.Text = Name .. " 👑"
+        else
+            HPBar.Health.TextLabel.Text = Name
+        end
+    end
+
     local TextLabel = Instance.new("TextLabel")
     TextLabel.Text = ("%d/%d"):format(Character.Humanoid.Health, Character.Humanoid.MaxHealth)
     TextLabel.Font = Enum.Font.GothamSemibold
