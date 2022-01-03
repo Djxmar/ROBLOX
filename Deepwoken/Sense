@@ -2,8 +2,159 @@ local Plr = game.Players.LocalPlayer
 local Mouse = Plr:GetMouse()
 local Debris = game:GetService("Debris")
 
+local Players = game:GetService("Players")
+function CheckRole(_plr, _status)
+    local Role = _plr:GetRoleInGroup(5212858)
+    if not Role:match("Wave") and Role ~= "Guest" then
+        if _status then
+            game.StarterGui:SetCore("SendNotification", {
+                Title = Role .. " Joined!",
+                Text = _plr.Name,
+                Duration = math.huge,
+                Button1 = "Continue"
+            })
+        else
+            game.StarterGui:SetCore("SendNotification", {
+                Title = Role .. " Left",
+                Text = _plr.Name,
+                Duration = math.huge,
+                Button1 = "Continue"
+            })
+        end
+    end
+end
+
+for i,v in pairs(Players:GetChildren()) do
+    CheckRole(v, true)
+end
+
+Players.PlayerAdded:Connect(function(plr) CheckRole(plr, true) end)
+Players.PlayerRemoving:Connect(function(plr) CheckRole(plr, false) end)
+
 local SolarisLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/Djxmar/ROBLOX/main/UI%20Libraries/SenseLib1.lua"))()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Djxmar/ROBLOX/main/Flyscript", true))()
+
+rconsoleclear()
+rconsoleprint('@@MAGENTA@@')
+rconsoleprint(" _________________________ \n")
+rconsoleprint("|                         |\n")
+rconsoleprint("|          SENSE          |\n")
+rconsoleprint("|       By Riz#7848       |\n")
+rconsoleprint("|_________________________|\n\n")
+rconsoleprint('@@YELLOW@@')
+rconsoleprint("Successfully loaded Sense Console!\n")
+rconsoleprint("Version 1.2\n\n")
+
+for i,v in pairs(game:GetService("Players"):GetDescendants()) do
+    if v.Name == "Enchant" and v:IsA("StringValue") and v.Value ~= "" and v.Parent.Parent.Parent.Name ~= game.Players.LocalPlayer.Name then
+        
+        if v.Parent:FindFirstChild("EquipmentRef") then
+        rconsoleprint("@@YELLOW@@")
+        rconsoleprint("Item: ")
+        rconsoleprint("@@LIGHT_GRAY@@")
+        rconsoleprint(v.Parent:FindFirstChild("EquipmentRef").Value.."\n")
+        end
+        
+        rconsoleprint("@@YELLOW@@")
+        rconsoleprint("Enchant: ")
+        rconsoleprint("@@CYAN@@")
+        rconsoleprint(v.Value.."\n")
+        
+         rconsoleprint("@@YELLOW@@")
+        rconsoleprint("Rarity: ")
+        rconsoleprint("@@LIGHT_GRAY@@")
+        rconsoleprint(v.Parent:FindFirstChild("Rarity").Value.."\n")
+        
+        rconsoleprint("@@YELLOW@@")
+        rconsoleprint("Player: ".. v.Parent.Parent.Parent.Name)
+        rconsoleprint("@@LIGHT_GRAY@@")
+        rconsoleprint(" ("..tostring(v.Parent.Parent.Parent:FindFirstChild("leaderstats"):FindFirstChild("FirstName").Value.." "))
+        rconsoleprint(tostring(v.Parent.Parent.Parent:FindFirstChild("leaderstats"):FindFirstChild("LastName").Value)..")")
+        rconsoleprint("\n\n")
+        
+    end
+end
+
+game:GetService("Players").DescendantAdded:Connect(function(v)
+    if v.Name == "Enchant" and v:IsA("StringValue") and v.Value ~= "" and v.Parent.Parent.Parent.Name ~= game.Players.LocalPlayer.Name then
+        if v.Parent:FindFirstChild("EquipmentRef") then
+        rconsoleprint("@@YELLOW@@")
+        rconsoleprint("Item: ")
+        rconsoleprint("@@LIGHT_GRAY@@")
+        rconsoleprint(v.Parent:FindFirstChild("EquipmentRef").Value.."\n")
+        end
+        
+        rconsoleprint("@@YELLOW@@")
+        rconsoleprint("Enchant: ")
+        rconsoleprint("@@CYAN@@")
+        rconsoleprint(v.Value.."\n")
+        
+         rconsoleprint("@@YELLOW@@")
+        rconsoleprint("Rarity: ")
+        rconsoleprint("@@LIGHT_GRAY@@")
+        rconsoleprint(v.Parent:FindFirstChild("Rarity").Value.."\n")
+        
+        rconsoleprint("@@YELLOW@@")
+        rconsoleprint("Player: ".. v.Parent.Parent.Parent.Name)
+        rconsoleprint("@@LIGHT_GRAY@@")
+        rconsoleprint(" ("..tostring(v.Parent.Parent.Parent:FindFirstChild("leaderstats"):FindFirstChild("FirstName").Value.." "))
+        rconsoleprint(tostring(v.Parent.Parent.Parent:FindFirstChild("leaderstats"):FindFirstChild("LastName").Value)..")")
+        rconsoleprint("\n\n")
+    end
+end)
+
+game:GetService("Players").DescendantRemoving:Connect(function(v)
+    if v.Name == "Enchant" and v:IsA("StringValue") and v.Value ~= "" and v.Parent.Parent.Parent.Name ~= game.Players.LocalPlayer.Name then
+rconsoleclear()
+wait(.1)
+rconsoleprint('@@MAGENTA@@')
+rconsoleprint(" _________________________ \n")
+rconsoleprint("|                         |\n")
+rconsoleprint("|          SENSE          |\n")
+rconsoleprint("|       By Riz#7848       |\n")
+rconsoleprint("|_________________________|\n\n")
+rconsoleprint('@@YELLOW@@')
+rconsoleprint("Successfully loaded Sense Console!\n")
+rconsoleprint("Version 1.2\n\n")
+
+for i,c in pairs(game:GetService("Players"):GetDescendants()) do
+    if c.Name == "Enchant" and c:IsA("StringValue") and c.Value ~= "" and c.Parent.Parent.Parent.Name ~= game.Players.LocalPlayer.Name then
+        
+        if c.Parent:FindFirstChild("EquipmentRef") then
+        rconsoleprint("@@YELLOW@@")
+        rconsoleprint("Item: ")
+        rconsoleprint("@@LIGHT_GRAY@@")
+        rconsoleprint(c.Parent:FindFirstChild("EquipmentRef").Value.."\n")
+        end
+        
+        rconsoleprint("@@YELLOW@@")
+        rconsoleprint("Enchant: ")
+        rconsoleprint("@@CYAN@@")
+        rconsoleprint(c.Value.."\n")
+        
+         rconsoleprint("@@YELLOW@@")
+        rconsoleprint("Rarity: ")
+        rconsoleprint("@@LIGHT_GRAY@@")
+        rconsoleprint(c.Parent:FindFirstChild("Rarity").Value.."\n")
+        
+        rconsoleprint("@@YELLOW@@")
+        rconsoleprint("Player: ".. c.Parent.Parent.Parent.Name)
+        rconsoleprint("@@LIGHT_GRAY@@")
+        rconsoleprint(" ("..tostring(c.Parent.Parent.Parent:FindFirstChild("leaderstats"):FindFirstChild("FirstName").Value.." "))
+        rconsoleprint(tostring(c.Parent.Parent.Parent:FindFirstChild("leaderstats"):FindFirstChild("LastName").Value)..")")
+        rconsoleprint("\n\n")
+        
+    end
+end
+    end
+end)
+
+spawn(function()
+    while wait(1) do
+        local timeInfo = os.date("*t")
+        rconsolename("Sense  |  "..game.Players.LocalPlayer.Name.. "  |  ".. timeInfo.hour .. ":" .. timeInfo.min.. ":"..  timeInfo.sec)
+    end
+end)
 
 local function NotifySound()
     local Sound = Instance.new("Sound", game.Players.LocalPlayer.PlayerGui)
@@ -169,8 +320,9 @@ local toggle = sec:Toggle("Fullbright", false,"Fullbright", function(t)
 
 if _G.Fullbright then
     wait()
-lighting.AreaBrightness.Value = 4
-lighting.Brightness = 0.5
+lighting.AreaBrightness.Parent = game.ReplicatedStorage
+game.Lighting.Ambient = Color3.fromRGB(255,255,255)
+lighting.Brightness = 5
 lighting.Bloom.Parent = game.ReplicatedStorage
 lighting.GlobalShadows = false
 lighting.Atmosphere.Parent = game.ReplicatedStorage
@@ -178,6 +330,9 @@ lighting.IntenseDepth.Parent = game.ReplicatedStorage
 lighting.DepthOfField.Parent = game.ReplicatedStorage
 elseif _G.Fullbright == false then
 wait()
+if game.ReplicatedStorage:FindFirstChild("AreaBrightness") then
+    game.ReplicatedStorage.AreaBrightness.Parent = game.Lighting
+end
 if game.ReplicatedStorage:FindFirstChild("Bloom") then
 game.ReplicatedStorage.Bloom.Parent = game.Lighting
 end
@@ -287,7 +442,7 @@ local toggle = sec4:Toggle("Chest ESP", false,"ChestESP", function(t)
     if _G.ChestEsp then
         local children = workspace.Thrown:GetChildren()
 for i, child in ipairs(children) do
-	if child.Name == "Chest" and child:FindFirstChild("RootPart") then
+	if child.Name == "Model" and child:FindFirstChild("RootPart") and child.Parent:FindFirstChild("Lid") then
         			print(child)
         			local BillboardGui = Instance.new("BillboardGui", game.CoreGui)
 			local TextLabel = Instance.new("TextLabel")
@@ -313,7 +468,7 @@ end
     workspace.Thrown.DescendantAdded:Connect(function(v)
         wait()
 
-        if _G.ChestEsp and v.Name == "RootPart" and v.Parent.Name == "Chest" then
+        if _G.ChestEsp and v.Name == "RootPart" and v.Parent.Name == "Model" and v.Parent:FindFirstChild("Lid") then
             warn("Chest ESP")
 
             local BillboardGui = Instance.new("BillboardGui", game.CoreGui)
@@ -465,7 +620,7 @@ local function onCharacterAdded(Character, Player, Format)
 end
 
 workspace.Live.ChildAdded:Connect(function(v)
-    if _G.HealthBars and v.Name ~= game.Players.Locallayer.Name then
+    if _G.HealthBars and v.Name ~= game.Players.LocalPlayer.Name then
     coroutine.wrap(v)(Character)
     end
 end)
