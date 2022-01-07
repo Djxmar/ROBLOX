@@ -1,11 +1,104 @@
 local library = loadstring(game:GetObjects("rbxassetid://8441465992")[1].Source)() -- Library
 loadstring(game:HttpGetAsync("https://pastebin.com/raw/Ts8TSAZN", 0, true))() -- Notification Script
 
+if game.PlaceId == 4111023553 then notify("Choose your slot first and re-execute sense.") return end
+if game.PlaceId == 5735553160 or game.PlaceId == 6032399813 then game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild('LoadingGui').Parent = nil end
+
 local Plr = game.Players.LocalPlayer
 local Mouse = Plr:GetMouse()
 local camera = workspace.CurrentCamera;
 local runservice = game:GetService'RunService';
 local uis = game:GetService'UserInputService';
+
+local Wait = library.subs.Wait
+
+local SenseLib = library:CreateWindow({
+Name = "Sense",
+Themeable = false
+})
+
+local GeneralTabb = SenseLib:CreateTab({
+Name = "General"
+})
+
+local PlayerSectionn = GeneralTabb:CreateSection({
+Name = "Player"
+})
+
+_G.Bypass = false
+PlayerSectionn:AddToggle({
+Name = "Bypass",
+Callback = function(v)
+_G.Bypass = v
+end
+})
+
+PlayerSectionn:AddButton({
+Name = "Spawn Player",
+Callback = function(v)
+    if _G.Bypass then
+
+if game.PlaceId == 5735553160 then
+local plr = game.Players.LocalPlayer
+game:GetService("ReplicatedStorage"):WaitForChild("Requests"):WaitForChild("StartMenu"):WaitForChild("Start"):FireServer()
+local char = plr.Character or plr.CharacterAdded:wait()
+local hrp = char:WaitForChild("CharacterHandler")
+        
+local safepart = Instance.new("Part", game.Workspace)
+safepart.Name = "safetp"
+safepart.Anchored = true
+safepart.CanCollide = false
+safepart.Transparency = 1
+safepart.CFrame = CFrame.new(3064.80078, -1423.72949, 1579.94531, 0.0400669314, -3.61310164e-08, -0.999197006, 8.0379472e-09, 1, -3.58377363e-08, 0.999197006, -6.59558452e-09, 0.0400669314)
+hrp:Destroy()
+char:WaitForChild("HumanoidRootPart").CFrame = safepart.CFrame
+wait(4)
+char.Parent = game.Workspace:WaitForChild("Camera")
+char:WaitForChild("Head"):Destroy()
+elseif game.PlaceId == 6032399813 then
+local plr = game.Players.LocalPlayer
+game:GetService("ReplicatedStorage"):WaitForChild("Requests"):WaitForChild("StartMenu"):WaitForChild("Start"):FireServer()
+local char = plr.Character or plr.CharacterAdded:wait()
+local hrp = char:WaitForChild("CharacterHandler")    
+    
+local safepart = Instance.new("Part", game.Workspace)
+safepart.Name = "safetp"
+safepart.Anchored = true
+safepart.CanCollide = false
+safepart.Transparency = 1
+safepart.CFrame = CFrame.new(-2731.08789, 979.972595, 708.588257, -0.0376689322, 5.11867846e-08, -0.999290287, 7.5666776e-08, 1, 4.83708291e-08, 0.999290287, -7.37909929e-08, -0.0376689322)
+hrp:Destroy()
+char:WaitForChild("HumanoidRootPart").CFrame = safepart.CFrame
+wait(4)
+char.Parent = game.Workspace:WaitForChild("Camera")
+char:WaitForChild("Head"):Destroy()
+end
+
+            else
+        game:GetService("ReplicatedStorage"):WaitForChild("Requests"):WaitForChild("StartMenu"):WaitForChild("Start"):FireServer()
+    end
+end
+})
+
+PlayerSectionn:AddButton({
+Name = "Hide Leaderboard Name",
+Callback = function()
+if game.Players.LocalPlayer:FindFirstChild("leaderstats") and game.Players.LocalPlayer.Character == nil then
+        game.Players.LocalPlayer:WaitForChild("leaderstats").Parent = nil
+        notify("Successfully hid leaderboard name!")
+    else
+        notify("Leaderboard name is already hidden!")
+    end
+end
+})
+
+---------------------------------------
+local character = Plr.Character or Plr.CharacterAdded:wait()
+local humanoidwait = character:WaitForChild('Humanoid')
+
+library.unload()
+
+local library = loadstring(game:GetObjects("rbxassetid://8441465992")[1].Source)() -- Library
 
 local Wait = library.subs.Wait
 
