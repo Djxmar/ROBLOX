@@ -2,7 +2,7 @@ local library = loadstring(game:GetObjects("rbxassetid://8441465992")[1].Source)
 loadstring(game:HttpGetAsync("https://pastebin.com/raw/Ts8TSAZN", 0, true))() -- Notification Script
 
 if game.PlaceId == 4111023553 then notify("Choose your slot first and re-execute sense.") return end
-if game.PlaceId == 5735553160 or game.PlaceId == 6032399813 then game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild('LoadingGui').Parent = nil end
+if game.PlaceId == 5735553160 or game.PlaceId == 6032399813 then if game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild('LoadingGui') then game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild('LoadingGui'):Destroy() end end
 
 local Plr = game.Players.LocalPlayer
 local Mouse = Plr:GetMouse()
@@ -105,7 +105,8 @@ local Wait = library.subs.Wait
 local SenseLib = library:CreateWindow({
 Name = "Sense",
 Themeable = {
-Info = "Script made by Riz#7848"
+Info = "Script made by Riz#7848",
+Info2 = "Discord: 8tSjRMZhjq"
 }
 })
 
@@ -147,16 +148,6 @@ else
     end
 end
 })
-PlayerSection:AddButton({
-Name = "Hide Leaderboard Name",
-Callback = function()
-    if game.Players.LocalPlayer:WaitForChild("leaderstats") and game.Players.LocalPlayer.Character == nil then
-            game.Players.LocalPlayer.leaderstats.Parent = nil
-        else
-            notify("This feature only works while you are in the starter menu.")
-    end
-end
-})
 
 PlayerSection:AddButton({
     Name = "Eternal Inventory Items",
@@ -168,6 +159,36 @@ PlayerSection:AddButton({
                 v.Parent = game.Players.LocalPlayer.Backpack
             end
         end
+    end
+})
+
+_G.Uncarrieable = false
+PlayerSection:AddToggle({
+    Name = "Uncarrieable",
+    Flag = "Uncarrieable",
+    Callback = function(b)
+        _G.Uncarrieable = b
+        game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart").ChildAdded:connect(function(v)
+            if _G.Uncarrieable and v.Name == "Motor6D" then
+                game:GetService("RunService").RenderStepped:wait()
+                v.Parent = nil
+            end
+        end)
+    end
+})
+
+_G.NoKnockStun = false
+PlayerSection:AddToggle({
+    Name = "No Knocked Stun",
+    Flag = "NoKnockStun",
+    Callback = function(b)
+        _G.NoKnockStun = b
+        game.Players.LocalPlayer.Character.DescendantAdded:connect(function(v)
+            if _G.NoKnockStun and v.Name == "Weld" and v.Parent.Name == "Bone" then
+                game:GetService("RunService").RenderStepped:wait()
+                v.Parent = nil
+            end
+        end)
     end
 })
 
@@ -774,36 +795,56 @@ VisualsSection:AddSlider({
 })
 
 
-local MiscSection = GeneralTab:CreateSection({
-Name = "Miscellaneous",
+local WorldTab = GeneralTab:CreateSection({
+Name = "World",
 Side = "Right"
 })
-MiscSection:AddToggle({
-Name = "No kill bricks",
+
+_G.NoKillBricks = false
+WorldTab:AddToggle({
+Name = "No Kill Bricks",
 Flag = "NoKillBricks",
-Callback = print
+Callback = function(v)
+    _G.NoKillBricks = v
+
+    if _G.NoKillBricks then
+        
+        for i,v in pairs(game.Workspace:GetChildren()) do
+            if _G.NoKillBricks and v.Name == "KillPlane" or v.Name == "ChasmBrick" then
+                v.Parent = game.Lighting
+            end
+        end
+
+        else
+            for i,v in pairs(game.Lighting:GetChildren()) do
+                if v.Name == "KillPlane" or v.Name == "ChasmBrick" then
+                    v.Parent = game.Workspace
+                end
+            end
+    end
+end
 })
-MiscSection:AddToggle({
-Name = "Child Printer",
-Flag = "ChildPrinter",
-Keybind = 1,
-Callback = print
-})
-MiscSection:AddToggle({
-Name = "Children Printer",
-Flag = "ChildrenPrinter",
-Keybind = 1,
-Callback = print
-})
-MiscSection:AddToggle({
-Name = "ChildAdded Printer",
-Flag = "CharChildAddedPrinter",
-Callback = print
-})
-MiscSection:AddToggle({
-Name = "DescendantAdded Printer",
-Flag = "CharChildAddedPrinter",
-Callback = print
+
+_G.DepthsWhirlpools = false
+WorldTab:AddToggle({
+    Name = "No Depths Whirlpools",
+    Flag = "NoDepthsWhirlpools",
+    Callback = function(v)
+        _G.DepthsWhirlpools = v
+        if _G.DepthsWhirlpools then
+        for _,a in pairs(game.Workspace:GetChildren()) do
+            if _G.DepthsWhirlpools and a.Name == "DepthsWhirlpool" and a:FindFirstChild("Part") then
+                a.Part.Parent = game:GetService("Lighting")
+            end
+        end
+    else
+        for i,v in pairs(game:GetService("Lighting"):GetChildren()) do
+            if v.Name == "Part" then
+                v.Parent = game.Workspace
+            end
+        end
+        end
+end
 })
 
 
@@ -1337,7 +1378,7 @@ PlayersESPSection:AddColorpicker({
     Name = "Health & Distance Color",
     Flag = "HealthAndDistanceColor",
     Callback = function(v)
-        _G.ColorsESP.Distance = v
+        _G.ColorsESP.Distance = v 
     end
 })
 
