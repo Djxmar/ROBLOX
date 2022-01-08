@@ -105,8 +105,7 @@ local Wait = library.subs.Wait
 local SenseLib = library:CreateWindow({
 Name = "Sense",
 Themeable = {
-Info = "Script made by Riz#7848",
-Info2 = "Discord: 8tSjRMZhjq"
+Info = "Script made by Riz#7848"
 }
 })
 
@@ -868,434 +867,336 @@ local PlayersESPSection = ESPTab:CreateSection({
 })
 
 
---Settings--
+_G.BoxThickness = 1.5
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local Teams = game:GetService("Teams")
+local LocalPlayer = Players.LocalPlayer
+local MoveMouse = mousemoverel
+
+local CIELUVInterpolator = loadstring(game:HttpGet("https://raw.githubusercontent.com/Djxmar/ROBLOX/main/lerp", true))()
+local HealthbarLerp = CIELUVInterpolator:Lerp(Color3.fromRGB(255, 0, 0), Color3.fromRGB(0, 255, 0))
+
 _G.ESP = {
-    Enabled = false,
-    Boxes = false,
-    BoxShift = CFrame.new(0,0,0),
-	BoxSize = Vector3.new(4,7,0),
-    Color = Color3.fromRGB(255,255,255),
-    FaceCamera = false,
-    Names = false,
-    TeamColor = true,
-    Thickness = 1,
-    AttachShift = 5,
-    TeamMates = true,
-    Players = true,
-    
-    Objects = setmetatable({}, {__mode="kv"}),
-    Overrides = {}
+    Boxes = false;
+    HealthBar = false;
+    Name = false;
+    IngameName = false;
+    ExtraInfo = false;
 }
 
-_G.ColorsESP = {
-    Boxes = Color3.fromRGB(255,255,255),
-    Names = Color3.fromRGB(255,255,255),
-    Distance = Color3.fromRGB(255,255,255),
-    Talents = Color3.fromRGB(255,255,255),
-    Tracers = Color3.fromRGB(255,255,255),
-    Objects = setmetatable({}, {__mode="kv"}),
-    Overrides = {}
-}
-
---Declarations--
-local cam = workspace.CurrentCamera
-local plrs = game:GetService("Players")
-local plr = plrs.LocalPlayer
-local mouse = plr:GetMouse()
-
-local V3new = Vector3.new
-local WorldToViewportPoint = cam.WorldToViewportPoint
-
---Functions--
-local function Draw(obj, props)
-	local new = Drawing.new(obj)
-	
-	props = props or {}
-	for i,v in pairs(props) do
-		new[i] = v
-	end
-	return new
-end
-
-function _G.ESP:GetTeam(p)
-	local ov = self.Overrides.GetTeam
-	if ov then
-		return ov(p)
-	end
-	
-	return p and p.Team
-end
-
-function _G.ESP:IsTeamMate(p)
-    local ov = self.Overrides.IsTeamMate
-	if ov then
-		return ov(p)
-    end
-    
-    return self:GetTeam(p) == self:GetTeam(plr)
-end
-
-function _G.ESP:GetColor(obj)
-	local ov = self.Overrides.GetColor
-	if ov then
-		return ov(obj)
-    end
-    local p = self:GetPlrFromChar(obj)
-	return p and self.TeamColor and p.Team and p.Team.TeamColor.Color or self.Color
-end
-
-function _G.ESP:GetPlrFromChar(char)
-	local ov = self.Overrides.GetPlrFromChar
-	if ov then
-		return ov(char)
-	end
-	
-	return plrs:GetPlayerFromCharacter(char)
-end
-
-function _G.ESP:Toggle(bool)
-    self.Enabled = bool
-    if not bool then
-        for i,v in pairs(self.Objects) do
-            if v.Type == "Box" then --fov circle etc
-                if v.Temporary then
-                    v:Remove()
-                else
-                    for i,v in pairs(v.Components) do
-                        v.Visible = false
-                    end
-                end
-            end
-        end
-    end
-end
-
-function _G.ESP:GetBox(obj)
-    return self.Objects[obj]
-end
-
-function _G.ESP:AddObjectListener(parent, options)
-    local function NewListener(c)
-        if type(options.Type) == "string" and c:IsA(options.Type) or options.Type == nil then
-            if type(options.Name) == "string" and c.Name == options.Name or options.Name == nil then
-                if not options.Validator or options.Validator(c) then
-                    local box = _G.ESP:Add(c, {
-                        PrimaryPart = type(options.PrimaryPart) == "string" and c:WaitForChild(options.PrimaryPart) or type(options.PrimaryPart) == "function" and options.PrimaryPart(c),
-                        Color = type(options.Color) == "function" and options.Color(c) or options.Color,
-                        ColorDynamic = options.ColorDynamic,
-                        Name = type(options.CustomName) == "function" and options.CustomName(c) or options.CustomName,
-                        IsEnabled = options.IsEnabled,
-                        RenderInNil = options.RenderInNil
-                    })
-                    --TODO: add a better way of passing options
-                    if options.OnAdded then
-                        coroutine.wrap(options.OnAdded)(box)
-                    end
-                end
-            end
-        end
-    end
-
-    if options.Recursive then
-        parent.DescendantAdded:Connect(NewListener)
-        for i,v in pairs(parent:GetDescendants()) do
-            coroutine.wrap(NewListener)(v)
-        end
-    else
-        parent.ChildAdded:Connect(NewListener)
-        for i,v in pairs(parent:GetChildren()) do
-            coroutine.wrap(NewListener)(v)
-        end
-    end
-end
-
-local boxBase = {}
-boxBase.__index = boxBase
-
-function boxBase:Remove()
-    _G.ESP.Objects[self.Object] = nil
-    for i,v in pairs(self.Components) do
-        v.Visible = false
-        v:Remove()
-        self.Components[i] = nil
-    end
-end
-
-function boxBase:Update()
-    if not self.PrimaryPart then
-        --warn("not supposed to print", self.Object)
-        return self:Remove()
-    end
-
-    local color
-    if _G.ESP.Highlighted == self.Object then
-       color = _G.ESP.HighlightColor
-    else
-        color = self.Color or self.ColorDynamic and self:ColorDynamic() or _G.ESP:GetColor(self.Object) or _G.ESP.Color
-    end
-
-    local allow = true
-    if _G.ESP.Overrides.UpdateAllow and not _G.ESP.Overrides.UpdateAllow(self) then
-        allow = false
-    end
-    if self.Player and not _G.ESP.TeamMates and _G.ESP:IsTeamMate(self.Player) then
-        allow = false
-    end
-    if self.Player and not _G.ESP.Players then
-        allow = false
-    end
-    if self.IsEnabled and (type(self.IsEnabled) == "string" and not _G.ESP[self.IsEnabled] or type(self.IsEnabled) == "function" and not self:IsEnabled()) then
-        allow = false
-    end
-    if not workspace:IsAncestorOf(self.PrimaryPart) and not self.RenderInNil then
-        allow = false
-    end
-
-    if not allow then
-        for i,v in pairs(self.Components) do
-            v.Visible = false
-        end
-        return
-    end
-
-    if _G.ESP.Highlighted == self.Object then
-        color = _G.ESP.HighlightColor
-    end
-
-    --calculations--
-    local cf = self.PrimaryPart.CFrame
-    if _G.ESP.FaceCamera then
-        cf = CFrame.new(cf.p, cam.CFrame.p)
-    end
-    local size = self.Size
-    local locs = {
-        TopLeft = cf * _G.ESP.BoxShift * CFrame.new(size.X/2,size.Y/2,0),
-        TopRight = cf * _G.ESP.BoxShift * CFrame.new(-size.X/2,size.Y/2,0),
-        BottomLeft = cf * _G.ESP.BoxShift * CFrame.new(size.X/2,-size.Y/2,0),
-        BottomRight = cf * _G.ESP.BoxShift * CFrame.new(-size.X/2,-size.Y/2,0),
-        TagPos = cf * _G.ESP.BoxShift * CFrame.new(0,size.Y/1,0),
-        Torso = cf * _G.ESP.BoxShift
+local Visuals = {Players = {}} do
+    local DrawingProperties = {
+        Line = {
+            Thickness = 1.5,
+            Color = Color3.fromRGB(255, 255, 255),
+            Visible = false
+        },
+        Text = {
+            Size = 16,
+            Center = true,
+            Outline = true,
+            Color = Color3.fromRGB(255, 255, 255),
+            Visible = false
+        },
+        Square = {
+            Thickness = _G.BoxThickness,
+            Filled = false,
+            Color = Color3.fromRGB(255, 255, 255),
+            Visible = false
+        },
+        Image = {
+            Rounding = 0,
+            Visible = false
+        }
     }
 
-    if _G.ESP.Boxes then
-        local TopLeft, Vis1 = WorldToViewportPoint(cam, locs.TopLeft.p)
-        local TopRight, Vis2 = WorldToViewportPoint(cam, locs.TopRight.p)
-        local BottomLeft, Vis3 = WorldToViewportPoint(cam, locs.BottomLeft.p)
-        local BottomRight, Vis4 = WorldToViewportPoint(cam, locs.BottomRight.p)
+    function Visuals:Round(Number, Bracket)
+        Bracket = (Bracket or 1)
 
-        if self.Components.Quad then
-            if Vis1 or Vis2 or Vis3 or Vis4 then
-                self.Components.Quad.Visible = true
-                self.Components.Quad.PointA = Vector2.new(TopRight.X, TopRight.Y)
-                self.Components.Quad.PointB = Vector2.new(TopLeft.X, TopLeft.Y)
-                self.Components.Quad.PointC = Vector2.new(BottomLeft.X, BottomLeft.Y)
-                self.Components.Quad.PointD = Vector2.new(BottomRight.X, BottomRight.Y)
-                self.Components.Quad.Color = _G.ColorsESP.Boxes
-            else
-                self.Components.Quad.Visible = false
-            end
-        end
-    else
-        self.Components.Quad.Visible = false
-    end
-
-    if _G.ESP.Names then
-        local TagPos, Vis5 = WorldToViewportPoint(cam, locs.TagPos.p)
-        
-        if Vis5 then
-            self.Components.Name.Visible = true
-            self.Components.Name.Position = Vector2.new(TagPos.X, TagPos.Y)
-            self.Components.Name.Text = self.Name
-            self.Components.Name.Color = _G.ColorsESP.Names
-            
-            self.Components.Distance.Visible = true
-            self.Components.Distance.Position = Vector2.new(TagPos.X, TagPos.Y + 15)
-            
-            local count = 0
-
-        for i,v in pairs(game.Players:WaitForChild(self.Name):WaitForChild("Backpack"):GetChildren()) do
-                if v:IsA("Folder") and v.Name:match("Talent") then
-                     count = count + 1
-            end
-        end
-        
-            local count2 = 0
-        for i,v in pairs(game.Players:WaitForChild(self.Name):WaitForChild("Backpack"):GetChildren()) do
-                if v:IsA("Tool") and v.Name:match("Mantra") then
-                    count2 = count2 + 1
-            end
-        end
-
-         self.Components.Talents.Visible = true
-        self.Components.Talents.Position = Vector2.new(TagPos.X, TagPos.Y + 30)
-        self.Components.Talents.Text = "[Talents: "..tostring(count).."] ".."[Mantras: "..tostring(count2).."]"
-        self.Components.Talents.Color = _G.ColorsESP.Talents
-        
-            self.Components.Distance.Text = "[".. math.floor(game.Players[self.Name].Character.Humanoid.Health).. "/".. game.Players[self.Name].Character.Humanoid.MaxHealth .."]" .. " [" ..math.floor((cam.CFrame.p - cf.p).magnitude) .."m]"
-            self.Components.Distance.Color = _G.ColorsESP.Distance
+        if typeof(Number) == "Vector2" then
+            return Vector2.new(Visuals:Round(Number.X), Visuals:Round(Number.Y))
         else
-            self.Components.Name.Visible = false
-            self.Components.Distance.Visible = false
-            self.Components.Talents.Visible = false
+            return (Number - Number % (Bracket or 1))
         end
-    else
-        self.Components.Name.Visible = false
-        self.Components.Distance.Visible = false
-        self.Components.Talents.Visible = false
-    end
-    
-    if _G.ESP.Tracers then
-        local TorsoPos, Vis6 = WorldToViewportPoint(cam, locs.Torso.p)
-
-        if Vis6 then
-            self.Components.Tracer.Visible = true
-            self.Components.Tracer.From = Vector2.new(TorsoPos.X, TorsoPos.Y)
-            self.Components.Tracer.To = Vector2.new(cam.ViewportSize.X/2,cam.ViewportSize.Y/_G.ESP.AttachShift)
-            self.Components.Tracer.Color = _G.ColorsESP.Tracers
-        else
-            self.Components.Tracer.Visible = false
-        end
-    else
-        self.Components.Tracer.Visible = false
-    end
-end
-
-function _G.ESP:Add(obj, options)
-    if not obj.Parent and not options.RenderInNil then
-        return warn(obj, "has no parent")
     end
 
-    local box = setmetatable({
-        Name = options.Name or obj.Name,
-        Type = "Box",
-        Color = options.Color --[[or self:GetColor(obj)]],
-        Size = options.Size or self.BoxSize,
-        Object = obj,
-        Player = options.Player or plrs:GetPlayerFromCharacter(obj),
-        PrimaryPart = options.PrimaryPart or obj.ClassName == "Model" and (obj.PrimaryPart or obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChildWhichIsA("BasePart")) or obj:IsA("BasePart") and obj,
-        Components = {},
-        IsEnabled = options.IsEnabled,
-        Temporary = options.Temporary,
-        ColorDynamic = options.ColorDynamic,
-        RenderInNil = options.RenderInNil
-    }, boxBase)
+    function Visuals:GetScreenPosition(Position)
+        local Position, Visible = Workspace.CurrentCamera:WorldToViewportPoint(Position)
+        local FullPosition = Position
+        Position = Vector2.new(Position.X, Position.Y)
 
-    if self:GetBox(obj) then
-        self:GetBox(obj):Remove()
+        return Position, Visible, FullPosition
     end
 
-    box.Components["Quad"] = Draw("Quad", {
-        Thickness = self.Thickness,
-        Color = _G.ColorsESP.Boxes,
-        Transparency = 1,
-        Filled = false,
-        Visible = self.Enabled and self.Boxes
-    })
-    box.Components["Name"] = Draw("Text", {
-		Text = box.Name,
-		Color = box.Color,
-		Center = true,
-		Outline = true,
-        Size = 18,
-        Visible = self.Enabled and self.Names
-	})
-	box.Components["Distance"] = Draw("Text", {
-		Color = box.Color,
-		Center = true,
-		Outline = true,
-        Size = 18,
-        Visible = self.Enabled and self.Names
-	})
-		box.Components["Talents"] = Draw("Text", {
-		Color = box.Color,
-		Center = true,
-		Outline = true,
-        Size = 19,
-        Visible = self.Enabled and self.Names
-	})
-	
-	box.Components["Tracer"] = Draw("Line", {
-		Thickness = _G.ESP.Thickness,
-		Color = box.Color,
-        Transparency = 1,
-        Visible = self.Enabled and self.Tracers
-    })
-    self.Objects[obj] = box
-    
-    obj.AncestryChanged:Connect(function(_, parent)
-        if parent == nil and _G.ESP.AutoRemove ~= false then
-            box:Remove()
-        end
-    end)
-    obj:GetPropertyChangedSignal("Parent"):Connect(function()
-        if obj.Parent == nil and _G.ESP.AutoRemove ~= false then
-            box:Remove()
-        end
-    end)
+    function Visuals:CreateDrawing(Type, Custom)
+        local Drawing = Drawing.new(Type)
 
-    local hum = obj:FindFirstChildOfClass("Humanoid")
-	if hum then
-        hum.Died:Connect(function()
-            if _G.ESP.AutoRemove ~= false then
-                box:Remove()
+        for Property, Value in pairs(DrawingProperties[Type]) do
+            Drawing[Property] = Value
+        end
+
+        if Custom then
+            for Property, Value in pairs(Custom) do
+                Drawing[Property] = Value
             end
-		end)
-    end
-
-    return box
-end
-
-local function CharAdded(char)
-    local p = plrs:GetPlayerFromCharacter(char)
-    if not char:FindFirstChild("HumanoidRootPart") then
-        local ev
-        ev = char.ChildAdded:Connect(function(c)
-            if c.Name == "HumanoidRootPart" then
-                ev:Disconnect()
-                _G.ESP:Add(char, {
-                    Name = p.Name,
-                    Player = p,
-                    PrimaryPart = c
-                })
-            end
-        end)
-    else
-        _G.ESP:Add(char, {
-            Name = p.Name,
-            Player = p,
-            PrimaryPart = char.HumanoidRootPart
-        })
-    end
-end
-local function PlayerAdded(p)
-    p.CharacterAdded:Connect(CharAdded)
-    if p.Character then
-        coroutine.wrap(CharAdded)(p.Character)
-    end
-end
-plrs.PlayerAdded:Connect(PlayerAdded)
-for i,v in pairs(plrs:GetPlayers()) do
-    if v ~= plr then
-        PlayerAdded(v)
-    end
-end
-
-game:GetService("RunService").RenderStepped:Connect(function()
-    cam = workspace.CurrentCamera
-    for i,v in (_G.ESP.Enabled and pairs or ipairs)(_G.ESP.Objects) do
-        if v.Update then
-            local s,e = pcall(v.Update, v)
-            if not s then warn("[EU]", e, v.Object:GetFullName()) end
         end
+
+        return Drawing
+    end
+
+    function Visuals.AddPlayer(Player)
+        if not Visuals.Players[Player] then
+            Visuals.Players[Player] = {
+                Box = {
+                    Outline = Visuals:CreateDrawing("Square", {Color = Color3.fromRGB(0, 0, 0)}),
+                    Main = Visuals:CreateDrawing("Square")
+                    --// Main = Visuals:CreateDrawing("Image", {Data = game:HttpGet("https://coasts.cool/uploads/48ny7FCjZ9iCmbAwlirI.png")})
+
+                },
+                Healthbar = {
+                    Outline = Visuals:CreateDrawing("Square", {Filled = true, Color = Color3.fromRGB(0, 0, 0)}),
+                    Main = Visuals:CreateDrawing("Square", {Filled = true, Color = Color3.fromRGB(0, 255, 0)})
+                },
+                Info = {
+                    Main = Visuals:CreateDrawing("Text"),
+                    Extra = Visuals:CreateDrawing("Text"),
+                    TalentsMantras = Visuals:CreateDrawing("Text")
+                }
+            }
+        end
+    end
+
+    function Visuals.RemovePlayer(Player)
+        if Visuals.Players[Player] then
+            for Index, Table in pairs(Visuals.Players[Player]) do
+                for Index2, Drawing in pairs(Table) do
+                    if Drawing.Remove then
+                        Drawing:Remove()
+                    end
+                end
+            end
+
+            Visuals.Players[Player] = nil
+        end
+    end
+end
+
+local PlayerUtilities = {} do
+    function PlayerUtilities:IsPlayerAlive(Player)
+        local Character = Player.Character
+        local Humanoid = (Character and Character:FindFirstChildWhichIsA("Humanoid"))
+
+        if Character and Humanoid then
+            if Humanoid.Health > 0 then
+                return true
+            end
+        end
+
+        return false
+    end
+
+    function PlayerUtilities:GetHealth(Player)
+        local Character = Player.Character
+        local Humanoid = (Character and Character:FindFirstChildWhichIsA("Humanoid"))
+
+        if Character and Humanoid then
+            return {
+                CurrentHealth = Humanoid.Health,
+                MaxHealth = Humanoid.MaxHealth
+            }
+        end
+    end
+
+    function PlayerUtilities:GetBodyParts(Player)
+        local Character = Player.Character
+        local Head = (Character and Character:FindFirstChild("Head"))
+        local Root = (Character and Character:FindFirstChild("HumanoidRootPart"))
+        local Torso = Character and (Character:FindFirstChild("LowerTorso") or Character:FindFirstChild("Torso"))
+        local LeftArm = Character and (Character:FindFirstChild("LeftLowerArm") or Character:FindFirstChild("Left Arm"))
+        local RightArm = Character and (Character:FindFirstChild("RightLowerArm") or Character:FindFirstChild("Right Arm"))
+        local LeftLeg = Character and (Character:FindFirstChild("LeftLowerLeg") or Character:FindFirstChild("Left Leg"))
+        local RightLeg = Character and (Character:FindFirstChild("RightLowerLeg") or Character:FindFirstChild("Right Leg"))
+
+        if Character and (Head and Root and Torso and LeftArm and RightArm and LeftLeg and RightLeg) then
+            return {
+                Character = Character,
+                Head = Head,
+                Root = Root,
+                Torso = Torso,
+                LeftArm = LeftArm,
+                RightArm = RightArm,
+                LeftLeg = LeftLeg,
+                RightLeg = RightLeg
+            }
+        end
+    end
+
+    function PlayerUtilities:GetTeamColor(Player)
+        return Player.TeamColor.Color
+    end
+
+    function PlayerUtilities:IsOnClientTeam(Player)
+        if LocalPlayer.Team == Player.Team then
+            return true
+        end
+
+        return false
+    end
+
+    function PlayerUtilities:GetDistanceFromClient(Position)
+        return LocalPlayer:DistanceFromCharacter(Position)
+    end
+
+
+end
+
+
+for Index, Player in pairs(Players:GetPlayers()) do
+    if Player == LocalPlayer then continue end
+    Visuals.AddPlayer(Player)
+end
+
+game.Players.PlayerAdded:Connect(function(player)
+    local talentcount = Instance.new("IntValue", player)
+    talentcount.Name = "TalentCount"
+    local mantracount = Instance.new("IntValue", player)
+    mantracount.Name = "MantraCount"
+    
+    local count = 0
+    local count2 = 0
+    
+    game:GetService("RunService").RenderStepped:wait()
+    player.CharacterAdded:Connect(function(char)
+        local humrp = char:WaitForChild("HumanoidRootPart")
+        wait(4)
+        local backpack = player:WaitForChild("Backpack")
+        for i,v in pairs(player:WaitForChild("Backpack"):GetChildren()) do
+        if v:IsA("Folder") and v.Name:match("Talent") then
+            count = count + 1
+        end
+        
+        if v:IsA("Tool") and v.Name:match("Mantra") then
+            count2 = count2 + 1
+        end 
+    end
+    talentcount.Value = count
+    mantracount.Value = count2
+    warn(talentcount.Value,mantracount.Value)
+        
+    end)
+end)
+
+Players = game:GetService("Players")
+for i, player in pairs(Players:GetPlayers()) do
+    if player ~= game.Players.LocalPlayer then
+    local talentcount = Instance.new("IntValue", player)
+    talentcount.Name = "TalentCount"
+    local mantracount = Instance.new("IntValue", player)
+    mantracount.Name = "MantraCount"
+    
+    local count = 0
+    local count2 = 0
+    
+    for i,v in pairs(player:WaitForChild("Backpack"):GetChildren()) do
+        if v:IsA("Folder") and v.Name:match("Talent") then
+            count = count + 1
+        end
+        
+        if v:IsA("Tool") and v.Name:match("Mantra") then
+            count2 = count2 + 1
+        end 
+    end
+    talentcount.Value = count
+    mantracount.Value = count2
+    print(talentcount.Value,mantracount.Value)
+end
+end
+
+_G.BoxEspColor = Color3.fromRGB(255, 255, 255)
+_G.NameColorsESP = Color3.fromRGB(255, 255, 255)
+_G.StatsInfoColor = Color3.fromRGB(255,255,255)
+
+Players.PlayerAdded:Connect(Visuals.AddPlayer)
+Players.PlayerRemoving:Connect(Visuals.RemovePlayer)
+RunService.RenderStepped:Connect(function()
+    for Index, Player in pairs(Players:GetPlayers()) do
+        if Player == LocalPlayer then continue end
+        local Objects = Visuals.Players[Player]
+        if not Objects then continue end
+
+        local OnScreen, PassedTeamCheck = false, true
+        local IsPlayerAlive = PlayerUtilities:IsPlayerAlive(Player)
+        local Health = PlayerUtilities:GetHealth(Player)
+        local BodyParts = PlayerUtilities:GetBodyParts(Player)
+        local PlayerColor = _G.BoxEspColor
+        local IsOnClientTeam = PlayerUtilities:IsOnClientTeam(Player)
+
+        if IsPlayerAlive and Health and BodyParts and PlayerColor and PassedTeamCheck then
+            local HealthPercent = (Health.CurrentHealth / Health.MaxHealth)
+            local Distance = PlayerUtilities:GetDistanceFromClient(BodyParts.Root.Position)
+            ScreenPosition, OnScreen = Visuals:GetScreenPosition(BodyParts.Root.Position)
+
+            local Orientation, Size = BodyParts.Character:GetBoundingBox()
+            local Height = (Workspace.CurrentCamera.CFrame - Workspace.CurrentCamera.CFrame.Position) * Vector3.new(0, (math.clamp(Size.Y, 1, 10) + 0.5) / 2, 0)
+            Height = math.abs(Workspace.CurrentCamera:WorldToScreenPoint(Orientation.Position + Height).Y - Workspace.CurrentCamera:WorldToScreenPoint(Orientation.Position - Height).Y)
+            Size = Visuals:Round(Vector2.new((Height / 2), Height))
+
+            local NameString = string.format("%s", Player.Name)
+
+            Objects.Box.Main.Color = PlayerColor
+            Objects.Box.Main.Size = Size
+            Objects.Box.Main.Position = Visuals:Round(Vector2.new(ScreenPosition.X, ScreenPosition.Y) - (Size / 2))
+
+            Objects.Box.Outline.Thickness = (Objects.Box.Main.Thickness * 2)
+            Objects.Box.Outline.Size = Objects.Box.Main.Size
+            Objects.Box.Outline.Position = Objects.Box.Main.Position
+
+            Objects.Healthbar.Main.Color = HealthbarLerp(HealthPercent)
+            Objects.Healthbar.Main.Size = Vector2.new(2, (-Objects.Box.Main.Size.Y * HealthPercent))
+            Objects.Healthbar.Main.Position = Vector2.new((Objects.Box.Main.Position.X - (Objects.Box.Outline.Thickness + 1)), (Objects.Box.Main.Position.Y + Objects.Box.Main.Size.Y))
+
+            Objects.Healthbar.Outline.Size = Vector2.new(4, (Objects.Box.Main.Size.Y + 2))
+            Objects.Healthbar.Outline.Position = Vector2.new((Objects.Box.Main.Position.X - (Objects.Box.Outline.Thickness + 2)), (Objects.Box.Main.Position.Y - 1))
+            
+            Objects.Info.Main.Font = Drawing.Fonts.UI
+            Objects.Info.Main.Text = NameString
+            Objects.Info.Main.Color = _G.NameColorsESP
+            Objects.Info.Main.Position = Vector2.new(((Objects.Box.Main.Size.X / 2) + Objects.Box.Main.Position.X), ((ScreenPosition.Y - Objects.Box.Main.Size.Y / 2) - 18))
+
+            
+
+            Objects.Info.Extra.Font = Drawing.Fonts.UI
+            Objects.Info.Extra.Text = string.format("(%dft) (%d/%d)", Distance, Health.CurrentHealth, Health.MaxHealth).."\n[Talents: "..tostring(Player:WaitForChild("TalentCount").Value).."] [Mantras: "..tostring(Player:WaitForChild("MantraCount").Value).."]"
+            Objects.Info.Extra.Position = Vector2.new(((Objects.Box.Main.Size.X / 2) + Objects.Box.Main.Position.X), (Objects.Box.Main.Size.Y + Objects.Box.Main.Position.Y))
+            Objects.Info.Extra.Color = _G.StatsInfoColor
+        end
+
+        Objects.Box.Main.Visible = (OnScreen and _G.ESP.Boxes) or false
+        Objects.Box.Outline.Visible = Objects.Box.Main.Visible
+
+        Objects.Healthbar.Main.Visible = (OnScreen and _G.ESP.HealthBar) or false
+        Objects.Healthbar.Outline.Visible = Objects.Healthbar.Main.Visible
+
+        Objects.Info.Main.Visible = (OnScreen and _G.ESP.Name) or false
+        Objects.Info.Extra.Visible = (OnScreen and _G.ESP.ExtraInfo) or false
     end
 end)
+
+local Fonts = {} do
+    for Font, Number in pairs(Drawing.Fonts) do
+        table.insert(Fonts, Font)
+    end
+end
+
 
 PlayersESPSection:AddToggle({
     Name = "Enabled",
     Flag = "PlayersESP",
     Keybind = 1,
     Callback = function(b)
-       _G.ESP:Toggle(b)
+        PlayersESPSection.Value = false
     end
 })
 
@@ -1308,61 +1209,34 @@ PlayersESPSection:AddToggle({
 })
 
 PlayersESPSection:AddToggle({
-    Name = "Name & Info",
-    Flag = "NameAndInfo",
+    Name = "Names",
+    Flag = "Names",
     Callback = function(b)
-       _G.ESP.Names = b
+       _G.ESP.Name = b
     end
 })
 
 PlayersESPSection:AddToggle({
-    Name = "Face Camera",
-    Flag = "FaceCamera",
+    Name = "Stats Info",
+    Flag = "StatsInfo",
     Callback = function(b)
-       _G.ESP.FaceCamera = b
+       _G.ESP.ExtraInfo = b
     end
 })
 
-PlayersESPSection:AddSlider({
-Name = "Box Size",
-Flag = "BoxSize",
-Value = 4,
-Min = 0,
-Max = 20,
-Textbox = true,
-Format = function(v)
-if v == 0 then
-return "No boxes?"
-else
-_G.ESP.BoxSize = Vector3.new(v,v+2,0)
-return "Box Size: " .. tostring(v)
-end
-end
-})
-
-PlayersESPSection:AddSlider({
-Name = "Box Shift",
-Flag = "BoxShift",
-Value = 0,
-Min = 0,
-Max = 6,
-Textbox = true,
-Format = function(v)
-if v == 0 then
-_G.ESP.BoxShift = CFrame.new(0,v,0)
-return "Box Shift: " .. tostring(v)
-else
-_G.ESP.BoxShift = CFrame.new(0,v,0)
-return "Box Shift: " .. tostring(v)
-end
-end
+PlayersESPSection:AddToggle({
+    Name = "Health Bars",
+    Flag = "PlrHealthBars",
+    Callback = function(b)
+       _G.ESP.HealthBar = b
+    end
 })
 
 PlayersESPSection:AddColorpicker({
     Name = "Box Color",
     Flag = "BoxColor",
     Callback = function(v)
-        _G.ColorsESP.Boxes = v
+        _G.BoxEspColor = v
     end
 })
 
@@ -1370,22 +1244,14 @@ PlayersESPSection:AddColorpicker({
     Name = "Name Color",
     Flag = "NameColor",
     Callback = function(v)
-        _G.ColorsESP.Names = v
+        _G.NameColorsESP = v
     end
 })
 
 PlayersESPSection:AddColorpicker({
-    Name = "Health & Distance Color",
-    Flag = "HealthAndDistanceColor",
+    Name = "Stats Info Color",
+    Flag = "StatsInfoColor",
     Callback = function(v)
-        _G.ColorsESP.Distance = v 
-    end
-})
-
-PlayersESPSection:AddColorpicker({
-    Name = "Talents & Mantras Color",
-    Flag = "TalentsAndMantrasColor",
-    Callback = function(v)
-        _G.ColorsESP.Talents = v
+        _G.StatsInfoColor = v 
     end
 })
