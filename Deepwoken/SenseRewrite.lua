@@ -66,7 +66,7 @@ safepart.Name = "safetp"
 safepart.Anchored = true
 safepart.CanCollide = false
 safepart.Transparency = 1
-safepart.CFrame = CFrame.new(-2731.08789, 979.972595, 708.588257, -0.0376689322, 5.11867846e-08, -0.999290287, 7.5666776e-08, 1, 4.83708291e-08, 0.999290287, -7.37909929e-08, -0.0376689322)
+safepart.CFrame = CFrame.new(2362.52686, 540.826599, -5902.19287, -0.984582901, 1.93159373e-08, 0.174918547, 1.91274108e-08, 1, -2.76366352e-09, -0.174918547, 6.24682972e-10, -0.984582901)
 hrp:Destroy()
 char:WaitForChild("HumanoidRootPart").CFrame = safepart.CFrame
 wait(4)
