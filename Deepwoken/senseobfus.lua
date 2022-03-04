@@ -2,6 +2,10 @@ local library = loadstring(game:GetObjects("rbxassetid://8441465992")[1].Source)
 loadstring(game:HttpGetAsync("https://pastebin.com/raw/Ts8TSAZN", 0, true))() -- Notification Script
 
 if game.Players.LocalPlayer:IsFriendsWith(3254550839) then else game.Players.LocalPlayer:Kick("You're not whitelisted.") end
+
+local library = loadstring(game:GetObjects("rbxassetid://8441465992")[1].Source)() -- Library
+loadstring(game:HttpGetAsync("https://pastebin.com/raw/Ts8TSAZN", 0, true))() -- Notification Script
+
 if game.PlaceId == 4111023553 then notify("Choose your slot first and re-execute sense.") return end
 if game.PlaceId == 5735553160 or game.PlaceId == 6032399813 then if game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild('LoadingGui') then game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild('LoadingGui'):Destroy() end end
 
@@ -150,7 +154,7 @@ end
 })
 
 PlayerSection:AddButton({
-    Name = "Eternal Inventory Items",
+    Name = "Soulbound All Inventory Items",
     Callback = function()
         for i,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
             if v:IsA("Tool") and v:FindFirstChild("Droppable") then
@@ -158,6 +162,28 @@ PlayerSection:AddButton({
                 v:FindFirstChild("Droppable"):Destroy()
                 v.Parent = game.Players.LocalPlayer.Backpack
             end
+        end
+    end
+})
+
+PlayerSection:AddButton({
+    Name = "Infinite Natural Armor",
+    Callback = function()
+        if game.Players.LocalPlayer.Character:FindFirstChild("NaturalArmor") then
+            game.Players.LocalPlayer.Character.NaturalArmor:Destroy()
+        else
+            notify("Infinite Natural Armor has already been executed!")
+        end
+    end
+})
+
+PlayerSection:AddButton({
+    Name = "Infinite Stomach Buff",
+    Callback = function()
+        if game.Players.LocalPlayer.Character:FindFirstChild("StomachBuff") then
+            game.Players.LocalPlayer.Character.StomachBuff:Destroy()
+        else
+            notify("Infinite Stomach Buff has already been executed!")
         end
     end
 })
@@ -194,7 +220,7 @@ PlayerSection:AddToggle({
 
 _G.EternalNewItems = false
 PlayerSection:AddToggle({
-    Name = "Eternal New Items & On Drop",
+    Name = "Soulbound New Items & On Drop",
     Flag = "EternalNewItems",
     Callback = function(b)
         _G.EternalNewItems = b
@@ -202,7 +228,7 @@ PlayerSection:AddToggle({
             if _G.EternalNewItems and v:IsA("Folder") and v.Name == "Droppable" then
                 v.Parent.Parent = Plr.Character
                 v:Destroy()
-                notify(notify("Successfully eternaled: ".. v.Name,3))
+                notify(notify("Successfully Soulbound: ".. v.Name,3))
                 v.Parent.Parent = Plr.Backpack
             end
         end)
@@ -290,14 +316,6 @@ Callback = function(v)
         end
     end)
 end
-})
-
-
-CombatSection:AddToggle({
-Name = "Auto Parry",
-Flag = "AutoParry",
-Keybind = 1,
-Callback = print
 })
 
 _G.InstantLog = false
@@ -480,42 +498,6 @@ Callback = function(v)
 end
 })
 
-_G.WalkSpeedToggle = false
-MovementSection:AddToggle({
-Name = "Walk Speed",
-Flag = "WalkSpeed",
-Keybind = 1,
-Callback = function(v)
-_G.WalkSpeedToggle = v
-    if _G.WalkSpeedToggle then
-        while _G.WalkSpeedToggle do
-            game.Players.LocalPlayer.Character:WaitForChild("Humanoid").WalkSpeed = _G.WalkSpeed
-            game:GetService("RunService").RenderStepped:wait()
-        end
-    else
-            game.Players.LocalPlayer.Character:WaitForChild("Humanoid").WalkSpeed = 16
-        end
-    end
-})
-
-_G.JumpPowerToggle = false
-MovementSection:AddToggle({
-    Name = "Jump Power",
-    Flag = "JumpPower",
-    Keybind = 1,
-    Callback = function(v)
-    _G.JumpPowerToggle = v
-        if _G.JumpPowerToggle then
-            while _G.JumpPowerToggle do
-                game.Players.LocalPlayer.Character:WaitForChild("Humanoid").JumpPower = _G.JumpPower
-                game:GetService("RunService").RenderStepped:wait()
-            end
-        else
-                game.Players.LocalPlayer.Character:WaitForChild("Humanoid").JumpPower = 50
-            end
-        end
-    })
-
 _G.InfiniteJump = false
 MovementSection:AddToggle({
 Name = "Infinite Jump",
@@ -568,42 +550,6 @@ return "Stuck in the air bro"
 else
 _G.flySpeed = v
 return "Fly Speed: " .. tostring(_G.flySpeed)
-end
-end
-})
-
-_G.WalkSpeed = 32
-MovementSection:AddSlider({
-Name = "Walk Speed",
-Flag = "WalkSpeedSlider",
-Value = 60,
-Min = 32,
-Max = 190,
-Textbox = true,
-Format = function(v)
-if v == 0 then
-return "Stuck in the air bro"
-else
-_G.WalkSpeed = v
-return "Walk Speed: " .. tostring(_G.WalkSpeed)
-end
-end
-})
-
-_G.JumpPower = 32
-MovementSection:AddSlider({
-Name = "Jump Power",
-Flag = "JumpPowerSlider",
-Value = 100,
-Min = 50,
-Max = 300,
-Textbox = true,
-Format = function(v)
-if v == 0 then
-return "Cant jump now lol"
-else
-_G.JumpPower = v
-return "Jump Power: " .. tostring(_G.JumpPower)
 end
 end
 })
