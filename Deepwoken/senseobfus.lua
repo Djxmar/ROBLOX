@@ -2,106 +2,15 @@ local library = loadstring(game:GetObjects("rbxassetid://8441465992")[1].Source)
 loadstring(game:HttpGetAsync("https://pastebin.com/raw/Ts8TSAZN", 0, true))() -- Notification Script
 
 if game.Players.LocalPlayer:IsFriendsWith(3254550839) then else game.Players.LocalPlayer:Kick("You're not whitelisted.") end
-
-local library = loadstring(game:GetObjects("rbxassetid://8441465992")[1].Source)() -- Library
-loadstring(game:HttpGetAsync("https://pastebin.com/raw/Ts8TSAZN", 0, true))() -- Notification Script
-
 if game.PlaceId == 4111023553 then notify("Choose your slot first and re-execute sense.") return end
-if game.PlaceId == 5735553160 or game.PlaceId == 6032399813 then if game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild('LoadingGui') then game:GetService("Players").LocalPlayer.PlayerGui:FindFirstChild('LoadingGui'):Destroy() end end
 
 local Plr = game.Players.LocalPlayer
 local Mouse = Plr:GetMouse()
 local camera = workspace.CurrentCamera;
 local runservice = game:GetService'RunService';
 local uis = game:GetService'UserInputService';
-
+                           
 local Wait = library.subs.Wait
-
-local SenseLib = library:CreateWindow({
-Name = "Sense",
-Themeable = false
-})
-
-local GeneralTabb = SenseLib:CreateTab({
-Name = "General"
-})
-
-local PlayerSectionn = GeneralTabb:CreateSection({
-Name = "Player"
-})
-
-_G.Bypass = false
-PlayerSectionn:AddToggle({
-Name = "Bypass",
-Callback = function(v)
-_G.Bypass = v
-end
-})
-
-PlayerSectionn:AddButton({
-Name = "Spawn Player",
-Callback = function(v)
-    if _G.Bypass then
-
-if game.PlaceId == 5735553160 then
-local plr = game.Players.LocalPlayer
-game:GetService("ReplicatedStorage"):WaitForChild("Requests"):WaitForChild("StartMenu"):WaitForChild("Start"):FireServer()
-local char = plr.Character or plr.CharacterAdded:wait()
-local hrp = char:WaitForChild("CharacterHandler")
-        
-local safepart = Instance.new("Part", game.Workspace)
-safepart.Name = "safetp"
-safepart.Anchored = true
-safepart.CanCollide = false
-safepart.Transparency = 1
-safepart.CFrame = CFrame.new(3064.80078, -1423.72949, 1579.94531, 0.0400669314, -3.61310164e-08, -0.999197006, 8.0379472e-09, 1, -3.58377363e-08, 0.999197006, -6.59558452e-09, 0.0400669314)
-hrp:Destroy()
-char:WaitForChild("HumanoidRootPart").CFrame = safepart.CFrame
-wait(4)
-char.Parent = game.Workspace:WaitForChild("Camera")
-char:WaitForChild("Head"):Destroy()
-elseif game.PlaceId == 6032399813 then
-local plr = game.Players.LocalPlayer
-game:GetService("ReplicatedStorage"):WaitForChild("Requests"):WaitForChild("StartMenu"):WaitForChild("Start"):FireServer()
-local char = plr.Character or plr.CharacterAdded:wait()
-local hrp = char:WaitForChild("CharacterHandler")    
-    
-local safepart = Instance.new("Part", game.Workspace)
-safepart.Name = "safetp"
-safepart.Anchored = true
-safepart.CanCollide = false
-safepart.Transparency = 1
-safepart.CFrame = CFrame.new(2362.52686, 540.826599, -5902.19287, -0.984582901, 1.93159373e-08, 0.174918547, 1.91274108e-08, 1, -2.76366352e-09, -0.174918547, 6.24682972e-10, -0.984582901)
-hrp:Destroy()
-char:WaitForChild("HumanoidRootPart").CFrame = safepart.CFrame
-wait(4)
-char.Parent = game.Workspace:WaitForChild("Camera")
-char:WaitForChild("Head"):Destroy()
-end
-
-            else
-        game:GetService("ReplicatedStorage"):WaitForChild("Requests"):WaitForChild("StartMenu"):WaitForChild("Start"):FireServer()
-    end
-end
-})
-
-PlayerSectionn:AddButton({
-Name = "Hide Leaderboard Name",
-Callback = function()
-if game.Players.LocalPlayer:FindFirstChild("leaderstats") and game.Players.LocalPlayer.Character == nil then
-        game.Players.LocalPlayer:WaitForChild("leaderstats").Parent = nil
-        notify("Successfully hid leaderboard name!")
-    else
-        notify("Leaderboard name is already hidden!")
-    end
-end
-})
-
----------------------------------------
-local character = Plr.Character or Plr.CharacterAdded:wait()
-local humanoidwait = character:WaitForChild('Humanoid')
-
-library.unload()
 
 local library = loadstring(game:GetObjects("rbxassetid://8441465992")[1].Source)() -- Library
 
@@ -122,23 +31,26 @@ local ESPTab = SenseLib:CreateTab({
 Name = "ESP"
 })
 
-local FarmsTab = SenseLib:CreateTab({
-Name = "Farms"
+if game.Players.LocalPlayer:IsFriendsWith(3445427861) then
+local EternalTab = SenseLib:CreateTab({
+Name = "Eternal"
 })
-
+end
+    
 local PlayerSection = GeneralTab:CreateSection({
 Name = "Player"
 })
 
+if game.Players.LocalPlayer:IsFriendsWith(3445427861) then
+local EternalSection = EternalTab:CreateSection({
+    Name = "Settings"
+})
+end
+    
 PlayerSection:AddButton({
 Name = "Respawn",
 Callback = function()
-local danger = game:GetService("Players").LocalPlayer.PlayerGui:WaitForChild("StatsGui"):WaitForChild("Danger")
-if danger.Visible == false then
 game.Players.LocalPlayer.Character:BreakJoints()
-else
-notify("You are in danger.")
-end
 end
 })
 PlayerSection:AddButton({
@@ -218,6 +130,7 @@ PlayerSection:AddToggle({
     end
 })
 
+if game.Players.LocalPlayer:IsFriendsWith(3445427861) then
 _G.EternalNewItems = false
 PlayerSection:AddToggle({
     Name = "Soulbound New Items & On Drop",
@@ -234,7 +147,8 @@ PlayerSection:AddToggle({
         end)
     end
 })
-
+end
+    
 _G.LootDropPickUp = false
 PlayerSection:AddToggle({
 Name = "Auto Loot Pickup",
@@ -266,6 +180,116 @@ Callback = function(v)
 
 end
 })
+
+-- Eternal Section
+if game.Players.LocalPlayer:IsFriendsWith(3445427861) then
+_G.EternalAutoLog = false
+_G.PlayMemeMusic = false
+_G.AnchorOnEternal = false
+_G.DisableDeathSound = false
+_G.TeleportToLobby = false
+
+local function playsound()
+
+    local Strings = {'rbxassetid://279207008', 'rbxassetid://3979042576', 'rbxassetid://130768080', 'rbxassetid://599238463', 'rbxassetid://4875051709', 'rbxassetid://3629259234', 'rbxassetid://2619237842', 'rbxassetid://131122314', 'rbxassetid://386974055', 'rbxassetid://417372826', 'rbxassetid://604671208', 'rbxassetid://4662452515'}
+    
+    local st = Strings[math.random(1, #Strings)]
+    local sound = Instance.new("Sound", game.Workspace)
+    sound.SoundId = st
+    sound:Play()
+    warn(st)
+end
+
+EternalSection:AddKeybind({
+    Name = "Eternal Keybind",
+    Flag = "EternalKeybind",
+    Mode = "Toggle",
+    Pressed = function(v)
+        
+        if _G.AnchorOnEternal then
+            game.Players.LocalPlayer.Character["Head"].Anchored = true
+            game.Players.LocalPlayer.Character["Torso"].Anchored = true
+            game.Players.LocalPlayer.Character["HumanoidRootPart"].Anchored = true
+            game.Players.LocalPlayer.Character["Left Arm"].Anchored = true
+            game.Players.LocalPlayer.Character["Right Arm"].Anchored = true
+            game.Players.LocalPlayer.Character["Left Leg"].Anchored = true
+            game.Players.LocalPlayer.Character["Right Leg"].Anchored = true
+        end
+
+        game.Players.LocalPlayer.Character.EffectsServer.Parent = nil
+
+        if _G.PlayMemeMusic then
+            playsound()
+        end
+
+        wait()
+
+        game.Players.LocalPlayer.Character:BreakJoints()
+        if _G.DisableDeathSound then
+		    game.Players.LocalPlayer.Character["Head"].Parent = nil
+            game.Players.LocalPlayer.Character["Torso"].Parent = nil
+            game.Players.LocalPlayer.Character["HumanoidRootPart"].Parent = nil
+			game.Players.LocalPlayer.Character["Humanoid"].Parent = nil
+            game.Players.LocalPlayer.Character["Left Arm"].Parent = nil
+            game.Players.LocalPlayer.Character["Right Arm"].Parent = nil
+            game.Players.LocalPlayer.Character["Left Leg"].Parent = nil
+            game.Players.LocalPlayer.Character["Right Leg"].Parent = nil
+		end
+        wait(1)
+        if _G.EternalAutoLog then
+            game.Players.LocalPlayer:Kick("Ez shit bruh")
+            if _G.TeleportToLobby then
+                local ts = game:GetService("TeleportService")
+                local p = game:GetService("Players").LocalPlayer
+
+                ts:Teleport(4111023553, p)
+            end
+        end
+
+    end
+})
+
+EternalSection:AddToggle({
+    Name = "Auto Log",
+    Flag = "AutoEternalLog",
+    Callback = function(v)
+        _G.EternalAutoLog = v
+    end
+})
+
+EternalSection:AddToggle({
+    Name = "Anchor",
+    Flag = "AnchorOnEternal",
+    Callback = function(v)
+        _G.AnchorOnEternal = v
+    end
+})
+
+EternalSection:AddToggle({
+    Name = "No Death Sound",
+    Flag = "NoDeathSound",
+    Callback = function(v)
+        _G.DisableDeathSound = v
+    end
+})
+
+EternalSection:AddToggle({
+    Name = "TP To lobby",
+    Flag = "TPToLobby",
+    Callback = function(v)
+        _G.TeleportToLobby = v
+    end
+})
+
+EternalSection:AddToggle({
+    Name = "Play Meme Music",
+    Flag = "PlayMemeMusic",
+    Callback = function(v)
+        _G.PlayMemeMusic = v
+    end
+})
+--
+end
 
 PlayerSection:AddKeybind({
 Name = "Click Delete",
