@@ -31,21 +31,11 @@ local ESPTab = SenseLib:CreateTab({
 Name = "ESP"
 })
 
-if game.Players.LocalPlayer:IsFriendsWith(3445427861) then
-local EternalTab = SenseLib:CreateTab({
-Name = "Eternal"
-})
-end
     
 local PlayerSection = GeneralTab:CreateSection({
 Name = "Player"
 })
 
-if game.Players.LocalPlayer:IsFriendsWith(3445427861) then
-local EternalSection = EternalTab:CreateSection({
-    Name = "Settings"
-})
-end
     
 PlayerSection:AddButton({
 Name = "Respawn",
@@ -129,25 +119,6 @@ PlayerSection:AddToggle({
         end)
     end
 })
-
-if game.Players.LocalPlayer:IsFriendsWith(3445427861) then
-_G.EternalNewItems = false
-PlayerSection:AddToggle({
-    Name = "Soulbound New Items & On Drop",
-    Flag = "EternalNewItems",
-    Callback = function(b)
-        _G.EternalNewItems = b
-        Plr.Backpack.DescendantAdded:Connect(function(v)
-            if _G.EternalNewItems and v:IsA("Folder") and v.Name == "Droppable" then
-                v.Parent.Parent = Plr.Character
-                v:Destroy()
-                notify(notify("Successfully Soulbound: ".. v.Name,3))
-                v.Parent.Parent = Plr.Backpack
-            end
-        end)
-    end
-})
-end
     
 _G.LootDropPickUp = false
 PlayerSection:AddToggle({
@@ -180,116 +151,6 @@ Callback = function(v)
 
 end
 })
-
--- Eternal Section
-if game.Players.LocalPlayer:IsFriendsWith(3445427861) then
-_G.EternalAutoLog = false
-_G.PlayMemeMusic = false
-_G.AnchorOnEternal = false
-_G.DisableDeathSound = false
-_G.TeleportToLobby = false
-
-local function playsound()
-
-    local Strings = {'rbxassetid://279207008', 'rbxassetid://3979042576', 'rbxassetid://130768080', 'rbxassetid://599238463', 'rbxassetid://4875051709', 'rbxassetid://3629259234', 'rbxassetid://2619237842', 'rbxassetid://131122314', 'rbxassetid://386974055', 'rbxassetid://417372826', 'rbxassetid://604671208', 'rbxassetid://4662452515'}
-    
-    local st = Strings[math.random(1, #Strings)]
-    local sound = Instance.new("Sound", game.Workspace)
-    sound.SoundId = st
-    sound:Play()
-    warn(st)
-end
-
-EternalSection:AddKeybind({
-    Name = "Eternal Keybind",
-    Flag = "EternalKeybind",
-    Mode = "Toggle",
-    Pressed = function(v)
-        
-        if _G.AnchorOnEternal then
-            game.Players.LocalPlayer.Character["Head"].Anchored = true
-            game.Players.LocalPlayer.Character["Torso"].Anchored = true
-            game.Players.LocalPlayer.Character["HumanoidRootPart"].Anchored = true
-            game.Players.LocalPlayer.Character["Left Arm"].Anchored = true
-            game.Players.LocalPlayer.Character["Right Arm"].Anchored = true
-            game.Players.LocalPlayer.Character["Left Leg"].Anchored = true
-            game.Players.LocalPlayer.Character["Right Leg"].Anchored = true
-        end
-
-        game.Players.LocalPlayer.Character.EffectsServer.Parent = nil
-
-        if _G.PlayMemeMusic then
-            playsound()
-        end
-
-        wait()
-
-        game.Players.LocalPlayer.Character:BreakJoints()
-        if _G.DisableDeathSound then
-		    game.Players.LocalPlayer.Character["Head"].Parent = nil
-            game.Players.LocalPlayer.Character["Torso"].Parent = nil
-            game.Players.LocalPlayer.Character["HumanoidRootPart"].Parent = nil
-			game.Players.LocalPlayer.Character["Humanoid"].Parent = nil
-            game.Players.LocalPlayer.Character["Left Arm"].Parent = nil
-            game.Players.LocalPlayer.Character["Right Arm"].Parent = nil
-            game.Players.LocalPlayer.Character["Left Leg"].Parent = nil
-            game.Players.LocalPlayer.Character["Right Leg"].Parent = nil
-		end
-        wait(1)
-        if _G.EternalAutoLog then
-            game.Players.LocalPlayer:Kick("Ez shit bruh")
-            if _G.TeleportToLobby then
-                local ts = game:GetService("TeleportService")
-                local p = game:GetService("Players").LocalPlayer
-
-                ts:Teleport(4111023553, p)
-            end
-        end
-
-    end
-})
-
-EternalSection:AddToggle({
-    Name = "Auto Log",
-    Flag = "AutoEternalLog",
-    Callback = function(v)
-        _G.EternalAutoLog = v
-    end
-})
-
-EternalSection:AddToggle({
-    Name = "Anchor",
-    Flag = "AnchorOnEternal",
-    Callback = function(v)
-        _G.AnchorOnEternal = v
-    end
-})
-
-EternalSection:AddToggle({
-    Name = "No Death Sound",
-    Flag = "NoDeathSound",
-    Callback = function(v)
-        _G.DisableDeathSound = v
-    end
-})
-
-EternalSection:AddToggle({
-    Name = "TP To lobby",
-    Flag = "TPToLobby",
-    Callback = function(v)
-        _G.TeleportToLobby = v
-    end
-})
-
-EternalSection:AddToggle({
-    Name = "Play Meme Music",
-    Flag = "PlayMemeMusic",
-    Callback = function(v)
-        _G.PlayMemeMusic = v
-    end
-})
---
-end
 
 PlayerSection:AddKeybind({
 Name = "Click Delete",
@@ -1226,3 +1087,137 @@ PlayersESPSection:AddColorpicker({
         _G.StatsInfoColor = v 
     end
 })
+
+--
+
+if game.Players.LocalPlayer:IsFriendsWith(3445427861) then
+	local EternalTab = SenseLib:CreateTab({
+	Name = "Eternal"
+	})
+	local EternalSection = EternalTab:CreateSection({
+		Name = "Settings"
+	})
+	_G.EternalNewItems = false
+	PlayerSection:AddToggle({
+		Name = "Soulbound New Items & On Drop",
+		Flag = "EternalNewItems",
+		Callback = function(b)
+			_G.EternalNewItems = b
+			Plr.Backpack.DescendantAdded:Connect(function(v)
+				if _G.EternalNewItems and v:IsA("Folder") and v.Name == "Droppable" then
+					v.Parent.Parent = Plr.Character
+					v:Destroy()
+					notify(notify("Successfully Soulbound: ".. v.Name,3))
+					v.Parent.Parent = Plr.Backpack
+				end
+			end)
+		end
+	})
+	
+	-- Eternal Section
+	_G.EternalAutoLog = false
+	_G.PlayMemeMusic = false
+	_G.AnchorOnEternal = false
+	_G.DisableDeathSound = false
+	_G.TeleportToLobby = false
+	
+	local function playsound()
+	
+		local Strings = {'rbxassetid://279207008', 'rbxassetid://3979042576', 'rbxassetid://130768080', 'rbxassetid://599238463', 'rbxassetid://4875051709', 'rbxassetid://3629259234', 'rbxassetid://2619237842', 'rbxassetid://131122314', 'rbxassetid://386974055', 'rbxassetid://417372826', 'rbxassetid://604671208', 'rbxassetid://4662452515'}
+		
+		local st = Strings[math.random(1, #Strings)]
+		local sound = Instance.new("Sound", game.Workspace)
+		sound.SoundId = st
+		sound:Play()
+		warn(st)
+	end
+	
+	EternalSection:AddKeybind({
+		Name = "Eternal Keybind",
+		Flag = "EternalKeybind",
+		Mode = "Toggle",
+		Pressed = function(v)
+			
+			if _G.AnchorOnEternal then
+				game.Players.LocalPlayer.Character["Head"].Anchored = true
+				game.Players.LocalPlayer.Character["Torso"].Anchored = true
+				game.Players.LocalPlayer.Character["HumanoidRootPart"].Anchored = true
+				game.Players.LocalPlayer.Character["Left Arm"].Anchored = true
+				game.Players.LocalPlayer.Character["Right Arm"].Anchored = true
+				game.Players.LocalPlayer.Character["Left Leg"].Anchored = true
+				game.Players.LocalPlayer.Character["Right Leg"].Anchored = true
+			end
+	
+			game.Players.LocalPlayer.Character.EffectsServer.Parent = nil
+	
+			if _G.PlayMemeMusic then
+				playsound()
+			end
+	
+			wait()
+	
+			game.Players.LocalPlayer.Character:BreakJoints()
+			if _G.DisableDeathSound then
+				game.Players.LocalPlayer.Character["Head"].Parent = nil
+				game.Players.LocalPlayer.Character["Torso"].Parent = nil
+				game.Players.LocalPlayer.Character["HumanoidRootPart"].Parent = nil
+				game.Players.LocalPlayer.Character["Humanoid"].Parent = nil
+				game.Players.LocalPlayer.Character["Left Arm"].Parent = nil
+				game.Players.LocalPlayer.Character["Right Arm"].Parent = nil
+				game.Players.LocalPlayer.Character["Left Leg"].Parent = nil
+				game.Players.LocalPlayer.Character["Right Leg"].Parent = nil
+			end
+			wait(1)
+			if _G.EternalAutoLog then
+				game.Players.LocalPlayer:Kick("Ez shit bruh")
+				if _G.TeleportToLobby then
+					local ts = game:GetService("TeleportService")
+					local p = game:GetService("Players").LocalPlayer
+	
+					ts:Teleport(4111023553, p)
+				end
+			end
+	
+		end
+	})
+	
+	EternalSection:AddToggle({
+		Name = "Auto Log",
+		Flag = "AutoEternalLog",
+		Callback = function(v)
+			_G.EternalAutoLog = v
+		end
+	})
+	
+	EternalSection:AddToggle({
+		Name = "Anchor",
+		Flag = "AnchorOnEternal",
+		Callback = function(v)
+			_G.AnchorOnEternal = v
+		end
+	})
+	
+	EternalSection:AddToggle({
+		Name = "No Death Sound",
+		Flag = "NoDeathSound",
+		Callback = function(v)
+			_G.DisableDeathSound = v
+		end
+	})
+	
+	EternalSection:AddToggle({
+		Name = "TP To lobby",
+		Flag = "TPToLobby",
+		Callback = function(v)
+			_G.TeleportToLobby = v
+		end
+	})
+	
+	EternalSection:AddToggle({
+		Name = "Play Meme Music",
+		Flag = "PlayMemeMusic",
+		Callback = function(v)
+			_G.PlayMemeMusic = v
+		end
+	})
+end
