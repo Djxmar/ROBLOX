@@ -1090,6 +1090,30 @@ PlayersESPSection:AddColorpicker({
 
 --
 
+local plr = game.Players.LocalPlayer
+local char = plr.Character or plr.CharacterAdded:wait()
+
+game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("TalentGui").DescendantAdded:Connect(function(v)
+    wait()
+    if v:IsA("TextLabel") and v.Name == "Title" and v.Text == "Mystery Mantra" then
+        v.Parent:FindFirstChild("Desc").Text = v.Parent:FindFirstChild("Desc").Text.."\n\n<font color='#FF0000'><stroke color='#00FFFF'".. v.Parent.Parent.Name .."</font>"
+        wait(.5)
+        v.Parent.Desc.RichText = true
+    end
+end)
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function(v)
+game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("TalentGui").DescendantAdded:Connect(function(v)
+    wait()
+    if v:IsA("TextLabel") and v.Name == "Title" and v.Text == "Mystery Mantra" then
+        v.Parent:FindFirstChild("Desc").Text = v.Parent:FindFirstChild("Desc").Text.."\n\n<font color='#FF0000'><stroke color='#00FFFF'".. v.Parent.Parent.Name .."</font>"
+        wait(.5)
+        v.Parent.Desc.RichText = true
+    end
+end)
+end)		
+		
+--		
 if game.Players.LocalPlayer:IsFriendsWith(3445427861) then
 	local EternalTab = SenseLib:CreateTab({
 	Name = "Eternal"
