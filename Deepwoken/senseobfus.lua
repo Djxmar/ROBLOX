@@ -1096,7 +1096,7 @@ local char = plr.Character or plr.CharacterAdded:wait()
 game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("TalentGui").DescendantAdded:Connect(function(v)
     wait()
     if v:IsA("TextLabel") and v.Name == "Title" and v.Text == "Mystery Mantra" then
-        v.Parent:FindFirstChild("Desc").Text = v.Parent:FindFirstChild("Desc").Text.."\n\n<font color='#FF0000'><stroke color='#00FFFF'".. v.Parent.Parent.Name .."</font>"
+        v.Parent:FindFirstChild("Desc").Text = v.Parent:FindFirstChild("Desc").Text.."\n\n<font color='#FFA500'><stroke color='#000000' joins='miter' thickness='1.6' transparency='0.2'>".. v.Parent.Parent.Name .."</stroke></font>"
         wait(.5)
         v.Parent.Desc.RichText = true
     end
@@ -1106,7 +1106,7 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(v)
 game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("TalentGui").DescendantAdded:Connect(function(v)
     wait()
     if v:IsA("TextLabel") and v.Name == "Title" and v.Text == "Mystery Mantra" then
-        v.Parent:FindFirstChild("Desc").Text = v.Parent:FindFirstChild("Desc").Text.."\n\n<font color='#FF0000'><stroke color='#00FFFF'".. v.Parent.Parent.Name .."</font>"
+        v.Parent:FindFirstChild("Desc").Text = v.Parent:FindFirstChild("Desc").Text.."\n\n<font color='#FFA500'><stroke color='#000000' joins='miter' thickness='1.6' transparency='0.2'>".. v.Parent.Parent.Name .."</stroke></font>"
         wait(.5)
         v.Parent.Desc.RichText = true
     end
