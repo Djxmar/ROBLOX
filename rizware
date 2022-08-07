@@ -1,0 +1,749 @@
+local library = loadstring(game:GetObjects("rbxassetid://8441465992")[1].Source)() -- Library
+
+local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
+local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
+
+local Plr = game.Players.LocalPlayer
+local Char = Plr.Character or Plr.CharacterAdded:wait()
+local Mouse = Plr:GetMouse()
+local camera = workspace.CurrentCamera;
+local runservice = game:GetService'RunService';
+local Players = game:GetService('Players')
+local uis = game:GetService'UserInputService';
+
+local Wait = library.subs.Wait
+
+local library = loadstring(game:GetObjects("rbxassetid://8441465992")[1].Source)() -- Library
+
+local Wait = library.subs.Wait
+
+-- // Tabs
+
+local SaberLib = library:CreateWindow({
+    Name = "Rizware",
+    Themeable = {
+    Info = "Script made by Riz#7848"
+    }
+})
+
+local sound = Instance.new("Sound", game.Players.LocalPlayer.PlayerGui)
+sound.SoundId = "rbxassetid://170765130"
+sound:Play()
+
+Notification:Notify(
+    {Title = "Rizware", Description = "You are using the premium version of Rizware"},
+    {OutlineColor = Color3.fromRGB(255,0,0),Time = 5, Type = "default"}
+ )
+
+local GeneralTab = SaberLib:CreateTab({
+    Name = "General"
+})
+
+local ESPTab = SaberLib:CreateTab({
+    Name = "ESP"
+    })
+
+    local PlaceID = game.PlaceId
+    local AllIDs = {}
+    local foundAnything = ""
+    local actualHour = os.date("!*t").hour
+    local Deleted = false
+    local File = pcall(function()
+        AllIDs = game:GetService('HttpService'):JSONDecode(readfile("NotSameServers.json"))
+    end)
+    if not File then
+        table.insert(AllIDs, actualHour)
+        writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+    end
+    function TPReturner()
+        local Site;
+        if foundAnything == "" then
+            Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100'))
+        else
+            Site = game.HttpService:JSONDecode(game:HttpGet('https://games.roblox.com/v1/games/' .. PlaceID .. '/servers/Public?sortOrder=Asc&limit=100&cursor=' .. foundAnything))
+        end
+        local ID = ""
+        if Site.nextPageCursor and Site.nextPageCursor ~= "null" and Site.nextPageCursor ~= nil then
+            foundAnything = Site.nextPageCursor
+        end
+        local num = 0;
+        for i,v in pairs(Site.data) do
+            local Possible = true
+            ID = tostring(v.id)
+            if tonumber(v.maxPlayers) > tonumber(v.playing) then
+                for _,Existing in pairs(AllIDs) do
+                    if num ~= 0 then
+                        if ID == tostring(Existing) then
+                            Possible = false
+                        end
+                    else
+                        if tonumber(actualHour) ~= tonumber(Existing) then
+                            local delFile = pcall(function()
+                                delfile("NotSameServers.json")
+                                AllIDs = {}
+                                table.insert(AllIDs, actualHour)
+                            end)
+                        end
+                    end
+                    num = num + 1
+                end
+                if Possible == true then
+                    table.insert(AllIDs, ID)
+                    wait()
+                    pcall(function()
+                        writefile("NotSameServers.json", game:GetService('HttpService'):JSONEncode(AllIDs))
+                        wait()
+                        game:GetService("TeleportService"):TeleportToPlaceInstance(PlaceID, ID, game.Players.LocalPlayer)
+                    end)
+                    wait(4)
+                end
+            end
+        end
+    end
+    
+    function Teleport()
+        while wait() do
+            pcall(function()
+                TPReturner()
+                if foundAnything ~= "" then
+                    TPReturner()
+                end
+            end)
+        end
+    end
+
+game.Players.PlayerAdded:Connect(function(Player)
+        if Player:GetRankInGroup(4959314) >= 250 then
+
+            local sound = Instance.new("Sound", game.Players.LocalPlayer.PlayerGui)
+            sound.SoundId = "rbxassetid://136075117"
+            sound:Play()
+
+            Notification:Notify(
+                {Title = "Rizware", Description = "A moderator has joined your game! Do you want to serverhop?"},
+                {OutlineColor = Color3.fromRGB(255, 0, 0),Time = 1000000, Type = "option"},
+                {Image = "http://www.roblox.com/asset/?id=8877073471", ImageColor = Color3.fromRGB(255, 84, 84), Callback = function(State) 
+                    
+                    Teleport()
+
+                    Notification:Notify(
+                        {Title = "Rizware", Description = "Server Hopping..."},
+                        {OutlineColor = Color3.fromRGB(37,0,170),Time = 5, Type = "default"}
+                     )
+                
+                end}
+             )
+        else
+            return
+        end
+ end)
+
+-- // Sections
+
+local PlayerSection = GeneralTab:CreateSection({
+        Name = "Player"
+})
+
+local CombatSection = GeneralTab:CreateSection({
+    Name = "Combat"
+})
+
+local ItemSection = GeneralTab:CreateSection({
+    Name = "Items"
+})
+
+local MiscSection = GeneralTab:CreateSection({
+    Name = "Miscellaneous",
+    Side = "Right"
+})
+
+local ConfigSection = GeneralTab:CreateSection({
+    Name = "Configs",
+    Side = "Right"
+    })
+
+-- // Player Section
+
+PlayerSection:AddButton({
+    Name = "Respawn",
+    Callback = function()
+    game.Players.LocalPlayer.Character:Destroy()
+    end
+})
+
+PlayerSection:AddButton({
+    Name = "Open Bank",
+    Callback = function()
+        game:GetService("ReplicatedStorage"):WaitForChild("GUI"):WaitForChild("Bank"):Clone().Parent = game.Players.LocalPlayer.PlayerGui
+    end
+})
+
+PlayerSection:AddButton({
+    Name = "Change Appearance",
+    Callback = function()
+        game:GetService("ReplicatedStorage"):WaitForChild("GUI"):WaitForChild("OutfitChanger"):Clone().Parent = game.Players.LocalPlayer.PlayerGui
+    end
+})
+
+PlayerSection:AddButton({
+    Name = "Unlock All Animation Packs",
+    Callback = function()
+        game:GetService("Players").LocalPlayer.bin.HasMoonwalkPack.Value = true
+        game:GetService("Players").LocalPlayer.bin.HasCowardPack.Value = true
+        game:GetService("Players").LocalPlayer.bin.HasBossPack.Value = true
+        game:GetService("Players").LocalPlayer.bin.HasSorcererPack.Value = true
+        game:GetService("Players").LocalPlayer.bin.HasAthleticPack.Value = true
+    end
+})
+
+PlayerSection:AddButton({
+    Name = "Drop Holding Tool (Dupe)",
+    Callback = function()
+        game.Players.LocalPlayer.Character.Humanoid:Destroy()
+    end
+})
+
+PlayerSection:AddToggle({
+    Name = "No Swim | Inf Air",
+    Flag = "NoSwimInfAir",
+    Callback = function(v)
+        if v then
+            game.Players.LocalPlayer.bin.Air.Parent = game.Players.LocalPlayer
+        else
+            game.Players.LocalPlayer.bin.Air.Parent = game.Players.LocalPlayer.bin
+            game.Players.LocalPlayer.Character:Destroy()
+        end
+    end
+})
+
+-- Combat Section
+_G.SuperCharge = false
+CombatSection:AddToggle({
+    Name = "Super Charge",
+    Flag = "SuperCharge",
+    Keybind = 1,
+    Callback = function(v)
+        _G.SuperCharge = v
+    end
+})
+
+CombatSection:AddDropdown({
+    Name = "Remove Statuses",
+    Flag = "SelectedStatus",
+    Nothing = "Select some Statuses",
+    List = {"Bleed","Wither","WindKnock","Shock","Soak","Plasma","Burn"},
+    MultiSelect = true,
+    Callback = function(v)
+        if type(v) == "table" then
+            print("Selected Statuses:", table.concat(v, " "))
+            else
+            print("No Statuses selected")
+        end
+        game.Players.LocalPlayer.Character.ChildAdded:Connect(function(n)
+            game:GetService("RunService").RenderStepped:wait()
+            if n.Name == v[1] or n.Name == v[2] or n.Name == v[3] or n.Name == v[4] or n.Name == v[5] or n.Name == v[6] or n.Name == v[7] then
+                n:Destroy()
+                warn(n)
+            end
+            if v[1] and n.Name == "Bleeding" then
+                n:Destroy()
+            end
+            if v[7] and n.Name == "Burning" then
+                n:Destroy()
+            end
+        end)
+
+        game.Players.LocalPlayer.CharacterAdded:Connect(function(charModel)
+            game.Players.LocalPlayer.Character.ChildAdded:Connect(function(n)
+                game:GetService("RunService").RenderStepped:wait()
+                if n.Name == v[1] or n.Name == v[2] or n.Name == v[3] or n.Name == v[4] or n.Name == v[5] or n.Name == v[6] or n.Name == v[7] then
+                    n:Destroy()
+                    warn(n)
+                end
+                if v[1] and n.Name == "Bleeding" then
+                    n:Destroy()
+                end
+                if v[7] and n.Name == "Burning" then
+                    n:Destroy()
+                end
+            end)
+        end)    
+    end
+})
+
+_G.SpamHoldingWeapon = false
+CombatSection:AddToggle({
+    Name = "Spam Holding Weapon",
+    Flag = "SpamWeapon",
+    Keybind = 1,
+    Callback = function(b)
+        _G.SpamHoldingWeapon = b
+        if game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") then
+            local tool = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
+
+            if tool:FindFirstChild("LocalScript"):FindFirstChild("Sword") then
+                while _G.SpamHoldingWeapon do
+                    game:GetService("RunService").RenderStepped:wait()
+                        local A_1 = "Slash"
+                        local A_2 = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+                        local Event = tool:FindFirstChild("LocalScript"):FindFirstChild("Sword")
+                        Event:FireServer(A_1, A_2)
+                end
+            elseif tool:FindFirstChild("LocalScript"):FindFirstChild("Combat") then
+
+                local LoggedValue = -1
+                local toggle = true
+                
+                local mt = getrawmetatable(game);
+                local old = mt.__namecall
+                local done = false
+                setreadonly(mt,false)
+                mt.__namecall = newcclosure(function(remote,...)
+                   args = {...}
+                   method = tostring(getnamecallmethod())
+                   if done == false and method == "FireServer" and tostring(remote) == "Combat" and tonumber(args[1]) then
+                       LoggedValue = args[1]
+                       done = true
+                       warn(LoggedValue)
+                       return old(remote,unpack(args))
+                   end
+                   return old(remote,...)
+                end)
+                setreadonly(mt,true)
+                
+                Notification:Notify(
+                    {Title = "Rizware", Description = "Please punch once to activate it!"},
+                    {OutlineColor = Color3.fromRGB(255, 115, 0),Time = 15, Type = "default"}
+                 )
+
+                while _G.SpamHoldingWeapon do
+                    game:GetService("RunService").RenderStepped:Wait()
+                    if done then
+                        local A_1 = LoggedValue
+                        local A_2 = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+                        local Event = tool:FindFirstChild("LocalScript"):FindFirstChild("Combat")
+                        Event:FireServer(A_1, A_2)
+                    end
+                end
+
+            end
+        end
+    end
+})
+
+-- super charge
+local KeyDown = false
+local InputService = game:GetService("UserInputService")
+
+InputService.InputEnded:Connect(function(key)
+if _G.SuperCharge and key.KeyCode == Enum.KeyCode.LeftShift then
+KeyDown = false
+end
+end)
+
+InputService.InputBegan:Connect(function(key)
+if _G.SuperCharge and key.KeyCode == Enum.KeyCode.LeftShift then
+KeyDown = true
+
+repeat
+
+local A_1 = "Charge"
+local Event = game:GetService("ReplicatedStorage").Remotes.Events.Charge
+Event:FireServer(A_1)
+game:GetService("RunService").RenderStepped:wait()
+local A_1 = "ChargeEnd"
+local Event = game:GetService("ReplicatedStorage").Remotes.Events.Charge
+Event:FireServer(A_1)
+
+
+until KeyDown == false
+end
+end)
+
+-- Misc
+-- // Misc Section
+
+MiscSection:AddButton({
+    Name = "Server Hop",
+    Callback = function()
+        
+        Notification:Notify(
+    {Title = "Rizware", Description = "Server Hopping..."},
+    {OutlineColor = Color3.fromRGB(37,0,170),Time = 5, Type = "default"}
+ )
+        
+Teleport()
+    end
+})
+
+-- // ESP SECTION
+
+local PlayersESPSection = ESPTab:CreateSection({
+    Name = "Players",
+})
+
+local ItemESPSection = ESPTab:CreateSection({
+    Name = "Items",
+})
+
+_G.BoxThickness = 1.5
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local Teams = game:GetService("Teams")
+local LocalPlayer = Players.LocalPlayer
+local MoveMouse = mousemoverel
+
+local CIELUVInterpolator = loadstring(game:HttpGet("https://raw.githubusercontent.com/Djxmar/ROBLOX/main/lerp", true))()
+local HealthbarLerp = CIELUVInterpolator:Lerp(Color3.fromRGB(255, 0, 0), Color3.fromRGB(0, 255, 0))
+
+_G.ESP = {
+    Boxes = false;
+    HealthBar = false;
+    Name = false;
+    IngameName = false;
+    ExtraInfo = false;
+}
+
+local Visuals = {Players = {}} do
+    local DrawingProperties = {
+        Line = {
+            Thickness = 1.5,
+            Color = Color3.fromRGB(255, 255, 255),
+            Visible = false
+        },
+        Text = {
+            Size = 16,
+            Center = true,
+            Outline = true,
+            Color = Color3.fromRGB(255, 255, 255),
+            Visible = false
+        },
+        Square = {
+            Thickness = _G.BoxThickness,
+            Filled = false,
+            Color = Color3.fromRGB(255, 255, 255),
+            Visible = false
+        },
+        Image = {
+            Rounding = 0,
+            Visible = false
+        }
+    }
+
+    function Visuals:Round(Number, Bracket)
+        Bracket = (Bracket or 1)
+
+        if typeof(Number) == "Vector2" then
+            return Vector2.new(Visuals:Round(Number.X), Visuals:Round(Number.Y))
+        else
+            return (Number - Number % (Bracket or 1))
+        end
+    end
+
+    function Visuals:GetScreenPosition(Position)
+        local Position, Visible = Workspace.CurrentCamera:WorldToViewportPoint(Position)
+        local FullPosition = Position
+        Position = Vector2.new(Position.X, Position.Y)
+
+        return Position, Visible, FullPosition
+    end
+
+    function Visuals:CreateDrawing(Type, Custom)
+        local Drawing = Drawing.new(Type)
+
+        for Property, Value in pairs(DrawingProperties[Type]) do
+            Drawing[Property] = Value
+        end
+
+        if Custom then
+            for Property, Value in pairs(Custom) do
+                Drawing[Property] = Value
+            end
+        end
+
+        return Drawing
+    end
+
+    function Visuals.AddPlayer(Player)
+        if not Visuals.Players[Player] then
+            Visuals.Players[Player] = {
+                Box = {
+                    Outline = Visuals:CreateDrawing("Square", {Color = Color3.fromRGB(0, 0, 0)}),
+                    Main = Visuals:CreateDrawing("Square")
+                    --// Main = Visuals:CreateDrawing("Image", {Data = game:HttpGet("https://coasts.cool/uploads/48ny7FCjZ9iCmbAwlirI.png")})
+
+                },
+                Healthbar = {
+                    Outline = Visuals:CreateDrawing("Square", {Filled = true, Color = Color3.fromRGB(0, 0, 0)}),
+                    Main = Visuals:CreateDrawing("Square", {Filled = true, Color = Color3.fromRGB(0, 255, 0)})
+                },
+                Info = {
+                    Main = Visuals:CreateDrawing("Text"),
+                    Extra = Visuals:CreateDrawing("Text"),
+                    TalentsMantras = Visuals:CreateDrawing("Text")
+                }
+            }
+        end
+    end
+
+    function Visuals.RemovePlayer(Player)
+        if Visuals.Players[Player] then
+            for Index, Table in pairs(Visuals.Players[Player]) do
+                for Index2, Drawing in pairs(Table) do
+                    if Drawing.Remove then
+                        Drawing:Remove()
+                    end
+                end
+            end
+
+            Visuals.Players[Player] = nil
+        end
+    end
+end
+
+local PlayerUtilities = {} do
+    function PlayerUtilities:IsPlayerAlive(Player)
+        local Character = Player.Character
+        local Humanoid = (Character and Character:FindFirstChildWhichIsA("Humanoid"))
+
+        if Character and Humanoid then
+            if Humanoid.Health > 0 then
+                return true
+            end
+        end
+
+        return false
+    end
+
+    function PlayerUtilities:GetHealth(Player)
+        local Character = Player.Character
+        local Humanoid = (Character and Character:FindFirstChildWhichIsA("Humanoid"))
+
+        if Character and Humanoid then
+            return {
+                CurrentHealth = Humanoid.Health,
+                MaxHealth = Humanoid.MaxHealth
+            }
+        end
+    end
+
+    function PlayerUtilities:GetBodyParts(Player)
+        local Character = Player.Character
+        local Head = (Character and Character:FindFirstChild("Head"))
+        local Root = (Character and Character:FindFirstChild("HumanoidRootPart"))
+        local Torso = Character and (Character:FindFirstChild("LowerTorso") or Character:FindFirstChild("Torso"))
+        local LeftArm = Character and (Character:FindFirstChild("LeftLowerArm") or Character:FindFirstChild("Left Arm"))
+        local RightArm = Character and (Character:FindFirstChild("RightLowerArm") or Character:FindFirstChild("Right Arm"))
+        local LeftLeg = Character and (Character:FindFirstChild("LeftLowerLeg") or Character:FindFirstChild("Left Leg"))
+        local RightLeg = Character and (Character:FindFirstChild("RightLowerLeg") or Character:FindFirstChild("Right Leg"))
+
+        if Character and (Head and Root and Torso and LeftArm and RightArm and LeftLeg and RightLeg) then
+            return {
+                Character = Character,
+                Head = Head,
+                Root = Root,
+                Torso = Torso,
+                LeftArm = LeftArm,
+                RightArm = RightArm,
+                LeftLeg = LeftLeg,
+                RightLeg = RightLeg
+            }
+        end
+    end
+
+    function PlayerUtilities:GetTeamColor(Player)
+        return Player.TeamColor.Color
+    end
+
+    function PlayerUtilities:IsOnClientTeam(Player)
+        if LocalPlayer.Team == Player.Team then
+            return true
+        end
+
+        return false
+    end
+
+    function PlayerUtilities:GetDistanceFromClient(Position)
+        return LocalPlayer:DistanceFromCharacter(Position)
+    end
+
+
+end
+
+
+for Index, Player in pairs(Players:GetPlayers()) do
+    if Player == LocalPlayer then continue end
+    Visuals.AddPlayer(Player)
+end
+
+game.Players.PlayerAdded:Connect(function(player)
+
+    game:GetService("RunService").RenderStepped:wait()
+    player.CharacterAdded:Connect(function(char)
+        local humrp = char:WaitForChild("HumanoidRootPart")
+        wait(4)
+        local backpack = player:WaitForChild("Backpack")
+        for i,v in pairs(player:WaitForChild("Backpack"):GetChildren()) do
+    end
+        
+    end)
+end)
+
+_G.BoxEspColor = Color3.fromRGB(255, 255, 255)
+_G.NameColorsESP = Color3.fromRGB(255, 255, 255)
+_G.StatsInfoColor = Color3.fromRGB(255,255,255)
+
+Players.PlayerAdded:Connect(Visuals.AddPlayer)
+Players.PlayerRemoving:Connect(Visuals.RemovePlayer)
+RunService.RenderStepped:Connect(function()
+    for Index, Player in pairs(Players:GetPlayers()) do
+        if Player == LocalPlayer then continue end
+        local Objects = Visuals.Players[Player]
+        if not Objects then continue end
+
+        local OnScreen, PassedTeamCheck = false, true
+        local IsPlayerAlive = PlayerUtilities:IsPlayerAlive(Player)
+        local Health = PlayerUtilities:GetHealth(Player)
+        local BodyParts = PlayerUtilities:GetBodyParts(Player)
+        local PlayerColor = _G.BoxEspColor
+        local IsOnClientTeam = PlayerUtilities:IsOnClientTeam(Player)
+
+        if IsPlayerAlive and Health and BodyParts and PlayerColor and PassedTeamCheck then
+            local HealthPercent = (Health.CurrentHealth / Health.MaxHealth)
+            local Distance = PlayerUtilities:GetDistanceFromClient(BodyParts.Root.Position)
+            ScreenPosition, OnScreen = Visuals:GetScreenPosition(BodyParts.Root.Position)
+
+            local Orientation, Size = BodyParts.Character:GetBoundingBox()
+            local Height = (Workspace.CurrentCamera.CFrame - Workspace.CurrentCamera.CFrame.Position) * Vector3.new(0, (math.clamp(Size.Y, 1, 10) + 0.5) / 2, 0)
+            Height = math.abs(Workspace.CurrentCamera:WorldToScreenPoint(Orientation.Position + Height).Y - Workspace.CurrentCamera:WorldToScreenPoint(Orientation.Position - Height).Y)
+            Size = Visuals:Round(Vector2.new((Height / 2), Height))
+
+            local NameString = string.format("%s", Player.Name)
+
+            Objects.Box.Main.Color = PlayerColor
+            Objects.Box.Main.Size = Size
+            Objects.Box.Main.Position = Visuals:Round(Vector2.new(ScreenPosition.X, ScreenPosition.Y) - (Size / 2))
+
+            Objects.Box.Outline.Thickness = (Objects.Box.Main.Thickness * 2)
+            Objects.Box.Outline.Size = Objects.Box.Main.Size
+            Objects.Box.Outline.Position = Objects.Box.Main.Position
+
+            Objects.Healthbar.Main.Color = HealthbarLerp(HealthPercent)
+            Objects.Healthbar.Main.Size = Vector2.new(2, (-Objects.Box.Main.Size.Y * HealthPercent))
+            Objects.Healthbar.Main.Position = Vector2.new((Objects.Box.Main.Position.X - (Objects.Box.Outline.Thickness + 1)), (Objects.Box.Main.Position.Y + Objects.Box.Main.Size.Y))
+
+            Objects.Healthbar.Outline.Size = Vector2.new(4, (Objects.Box.Main.Size.Y + 2))
+            Objects.Healthbar.Outline.Position = Vector2.new((Objects.Box.Main.Position.X - (Objects.Box.Outline.Thickness + 2)), (Objects.Box.Main.Position.Y - 1))
+            
+            Objects.Info.Main.Font = Drawing.Fonts.UI
+            Objects.Info.Main.Text = NameString
+            Objects.Info.Main.Color = _G.NameColorsESP
+            Objects.Info.Main.Position = Vector2.new(((Objects.Box.Main.Size.X / 2) + Objects.Box.Main.Position.X), ((ScreenPosition.Y - Objects.Box.Main.Size.Y / 2) - 18))
+
+            
+
+            Objects.Info.Extra.Font = Drawing.Fonts.UI
+            Objects.Info.Extra.Text = string.format("(%dft) (%d/%d)", Distance, Health.CurrentHealth, Health.MaxHealth).."\n[Level: "..tostring(Player:WaitForChild("bin"):WaitForChild("Level").Value).."] \n[Magic: "..tostring(Player:WaitForChild("bin"):WaitForChild("Magic").Value).. ",".. tostring(Player:WaitForChild("bin"):WaitForChild("Magic2").Value)..","..tostring(Player:WaitForChild("bin"):WaitForChild("Magic3").Value).."]"
+            Objects.Info.Extra.Position = Vector2.new(((Objects.Box.Main.Size.X / 2) + Objects.Box.Main.Position.X), (Objects.Box.Main.Size.Y + Objects.Box.Main.Position.Y))
+            Objects.Info.Extra.Color = _G.StatsInfoColor
+        end
+
+        Objects.Box.Main.Visible = (OnScreen and _G.ESP.Boxes) or false
+        Objects.Box.Outline.Visible = Objects.Box.Main.Visible
+
+        Objects.Healthbar.Main.Visible = (OnScreen and _G.ESP.HealthBar) or false
+        Objects.Healthbar.Outline.Visible = Objects.Healthbar.Main.Visible
+
+        Objects.Info.Main.Visible = (OnScreen and _G.ESP.Name) or false
+        Objects.Info.Extra.Visible = (OnScreen and _G.ESP.ExtraInfo) or false
+    end
+end)
+
+local Fonts = {} do
+    for Font, Number in pairs(Drawing.Fonts) do
+        table.insert(Fonts, Font)
+    end
+end
+
+PlayersESPSection:AddToggle({
+    Name = "Enabled",
+    Flag = "PlayersESP",
+    Keybind = 1,
+    Callback = function(b)
+        PlayersESPSection.Value = false
+    end
+})
+
+PlayersESPSection:AddToggle({
+    Name = "Boxes",
+    Flag = "Boxes",
+    Callback = function(b)
+       _G.ESP.Boxes = b
+    end
+})
+
+PlayersESPSection:AddToggle({
+    Name = "Names",
+    Flag = "Names",
+    Callback = function(b)
+       _G.ESP.Name = b
+    end
+})
+
+PlayersESPSection:AddToggle({
+    Name = "Stats Info",
+    Flag = "StatsInfo",
+    Callback = function(b)
+       _G.ESP.ExtraInfo = b
+    end
+})
+
+PlayersESPSection:AddToggle({
+    Name = "Health Bars",
+    Flag = "PlrHealthBars",
+    Callback = function(b)
+       _G.ESP.HealthBar = b
+    end
+})
+
+PlayersESPSection:AddColorpicker({
+    Name = "Box Color",
+    Flag = "BoxColor",
+    Callback = function(v)
+        _G.BoxEspColor = v
+    end
+})
+
+PlayersESPSection:AddColorpicker({
+    Name = "Name Color",
+    Flag = "NameColor",
+    Callback = function(v)
+        _G.NameColorsESP = v
+    end
+})
+
+PlayersESPSection:AddColorpicker({
+    Name = "Stats Info Color",
+    Flag = "StatsInfoColor",
+    Callback = function(v)
+        _G.StatsInfoColor = v 
+    end
+})
+
+-- Config
+ConfigSection:AddPersistence({
+    Name = "Configs",
+    Suffix = "Config",
+    Flags = 1 -- true: ALL Flags, 1: Window, 2: Tab, 3: Section, Table: Custom Flags
+})
+
+-- Extras
+for i,v in pairs(game.Players:GetPlayers()) do
+    if v:GetRankInGroup(4959314) >= 250 then
+        Notification:Notify(
+            {Title = "Rizware", Description = "A MODERATOR IS IN YOUR GAME!"},
+            {OutlineColor = Color3.fromRGB(255,0,0),Time = 5000000000, Type = "default"}
+            )
+    end
+end
